@@ -2,7 +2,7 @@ from flask import Flask, url_for, request, redirect
 from datetime import datetime
 app = Flask(__name__)
 
-@app.route("/web")
+@app.route("/lab1/web")
 def web():
     return """<!doctype html>
         <html>
@@ -15,7 +15,7 @@ def web():
             'Content-Type': 'text/plain; charset=utf-8'
         }
 
-@app.route("/author")
+@app.route("/lab1/author")
 def author():
 
     name = "Сорокун Соня Романовна"
@@ -32,7 +32,7 @@ def author():
            </body>
         </html>""")
 
-@app.route("/image")
+@app.route("/lab1/image")
 def image():
 
     path = url_for("static", filename = "oak.jpg")
@@ -51,7 +51,7 @@ def image():
 
 count = 0
 
-@app.route("/counter")
+@app.route("/lab1/counter")
 def counter():
     global count    
     time = datetime.today()
@@ -67,23 +67,23 @@ def counter():
             Дата и время: ''' + str(time) + '''
             <br> Запрошенный адрес: ''' + url + '''
             <br> Ваш IP адрес: ''' + client_ip + '''
-            <br><a href="http://127.0.0.1:5000/counter/clear">Обнулить счетчик</a>
+            <br><a href="http://127.0.0.1:5000/lab1/counter/clear">Обнулить счетчик</a>
         </body>
     </html>
 '''
 
-@app.route("/info")
+@app.route("/lab1/info")
 def info():
-    return redirect("/author")
+    return redirect("/lab1/author")
 
-@app.route("/counter/clear")
+@app.route("/lab1/counter/clear")
 def clear_count():
     global count
     count = 0
 
-    return redirect("/counter")
+    return redirect("/lab1/counter")
 
-@app.route("/create")
+@app.route("/lab1/create")
 def created():
     return'''
 <!doctype html>
