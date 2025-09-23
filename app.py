@@ -38,16 +38,30 @@ def title_page():
 @app.route("/lab1/")
 @app.route("/lab1/web")
 def lab1():
-    return """<!doctype html>
-        <html>
-            <body>
-                <h1>web-сервер на flask</h1>
-                <a href="/author">author</a>
-            </body>
-        </html>""", 200, {
-            'X-Server': 'sample',
-            'Content-Type': 'text/plain; charset=utf-8'
-        }
+
+    main_menu = url_for('title_page')
+
+    return '''
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная 1</title>
+</head>
+<body>
+    <main>
+        <p>Flask — фреймворк для создания веб-приложений на языке
+        программирования Python, использующий набор инструментов
+        Werkzeug, а также шаблонизатор Jinja2. Относится к категории так
+        называемых микрофреймворков — минималистичных каркасов
+        веб-приложений, сознательно предоставляющих лишь самые ба-
+        зовые возможности.</p>
+        <br><a href="''' + main_menu + '''">Назад в главное меню</a>
+    </main>
+</body>
+</html>
+'''
 
 @app.route("/lab1/author")
 def author():
