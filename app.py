@@ -169,4 +169,43 @@ def error_418():
 
 @app.errorhandler(404)
 def not_found(err):
-    return "Такой страницы нет!"
+
+    return '''
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка 404</title>
+    <style>
+        h1, h2 {
+            font-size: 200px;
+            color: violet;
+            text-shadow: 5px 5px 10px purple;
+            text-align: center;
+            margin-bottom: 0;
+            margin-top: 60px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+         h2 {
+            font-size: 40px;
+            text-shadow: none;
+        }
+    
+        @keyframes float {
+        0%   { transform: translateY(0px); }
+        50%  { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <h1>404</h1>
+        <h2>Страница по запрашиваемому адресу не найдена</h2>
+    </main>
+</body>
+</html>
+'''
