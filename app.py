@@ -1,7 +1,11 @@
 from flask import Flask, url_for, request, redirect, abort
 from datetime import datetime
 from werkzeug.exceptions import HTTPException
+
 app = Flask(__name__)
+
+# Глобальный список для хранения лога посещений
+access_log = []
 
 @app.route("/")
 @app.route("/index")
@@ -217,6 +221,18 @@ def error_500():
 
 @app.errorhandler(404)
 def not_found(err):
+    client_ip = request.remote_addr
+    access_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    requested_url = request.url
+    root_url = url_for('title_page')
+
+    log_entry = {
+        'ip': client_ip,
+        'date': access_date,
+        'url': requested_url
+    }
+    access_log.append(log_entry)
+    
     return '''
 <!DOCTYPE html>
 <html lang="ru">
@@ -235,9 +251,25 @@ def not_found(err):
             animation: float 3s ease-in-out infinite;
         }
 
-         h2 {
+        h2 {
             font-size: 40px;
             text-shadow: none;
+        }
+        
+        .info {
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        
+        .log {
+            background-color: #e0e0e0;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
         }
     
         @keyframes float {
@@ -252,6 +284,21 @@ def not_found(err):
     <main>
         <h1>404</h1>
         <h2>Страница по запрашиваемому адресу не найдена</h2>
+        
+        <div class="info">
+            <h3>Информация о запросе:</h3>
+            <p><strong>IP-адрес пользователя:</strong> ''' + client_ip + '''</p>
+            <p><strong>Дата и время доступа:</strong> ''' + access_date + '''</p>
+            <p><strong>Запрошенный URL:</strong> ''' + requested_url + '''</p>
+            <p><a href="''' + root_url + '''">Вернуться на главную страницу</a></p>
+        </div>
+        
+        <div class="log">
+            <h3>Полный лог посещений (404 ошибки):</h3>
+            <ul>
+''' + '\n'.join([f'<li>{entry["date"]} - IP: {entry["ip"]} - URL: {entry["url"]}</li>' for entry in access_log]) + '''
+            </ul>
+        </div>
     </main>
 </body>
 </html>
