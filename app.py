@@ -39,8 +39,20 @@ def title_page():
 @app.route("/lab1/")
 @app.route("/lab1/web")
 def lab1():
-
     main_menu = url_for('title_page')
+    author_url = url_for('author')
+    image_url = url_for('image')
+    counter_url = url_for('counter')
+    clear_counter_url = url_for('clear_counter')
+    info_url = url_for('info')
+    created_url = url_for('created')
+    error_400_url = url_for('error_400')
+    error_401_url = url_for('error_401')
+    error_402_url = url_for('error_402')
+    error_403_url = url_for('error_403')
+    error_405_url = url_for('error_405')
+    error_418_url = url_for('error_418')
+    error_500_url = url_for('error_500')
 
     return '''
 <!DOCTYPE html>
@@ -58,7 +70,28 @@ def lab1():
         называемых микрофреймворков — минималистичных каркасов
         веб-приложений, сознательно предоставляющих лишь самые ба-
         зовые возможности.</p>
+
         <br><a href="''' + main_menu + '''">Назад в главное меню</a>
+
+        <h2>Список роутов</h2>
+
+        <ul>
+            <li><a href="''' + url_for('lab1') + '''">/lab1/web</a></li>
+            <li><a href="''' + author_url + '''">/lab1/author</a></li>
+            <li><a href="''' + image_url + '''">/lab1/image</a></li>
+            <li><a href="''' + counter_url + '''">/lab1/counter</a></li>
+            <li><a href="''' + clear_counter_url + '''">/lab1/counter/clear</a></li>
+            <li><a href="''' + info_url + '''">/lab1/info</a></li>
+            <li><a href="''' + created_url + '''">/lab1/create</a></li>
+            <li><a href="''' + error_400_url + '''">/lab1/400</a></li>
+            <li><a href="''' + error_401_url + '''">/lab1/401</a></li>
+            <li><a href="''' + error_402_url + '''">/lab1/402</a></li>
+            <li><a href="''' + error_403_url + '''">/lab1/403</a></li>
+            <li><a href="''' + error_405_url + '''">/lab1/405</a></li>
+            <li><a href="''' + error_418_url + '''">/lab1/418</a></li>
+            <li><a href="''' + error_500_url + '''">/lab1/500</a></li>
+            <li><a href="/lab1/aboba">Несуществующая страница</a></li>
+        </ul>
     </main>
 </body>
 </html>
@@ -69,16 +102,17 @@ def author():
     name = "Сорокун Соня Романовна"
     group = "ФБИ-32"
     faculty = "ФБ"
+    lab1_url = url_for('lab1')
 
-    return("""<!doctype html>
+    return"""<!doctype html>
         <html>
            <body>
                <p>Студент: """ + name + """</p>
                <p>Группа: """ + group + """</p>
                <p>Факультет: """ + faculty + """</p>
-               <a href="/web">web</a>
+               <a href=""" + lab1_url + """>Назад к лабе 1</a>
            </body>
-        </html>""")
+        </html>"""
 
 @app.route("/lab1/image")
 def image():
@@ -111,6 +145,7 @@ def counter():
     url = request.url
     client_ip = request.remote_addr
     counter_clear_route = url_for('clear_counter')
+    lab1_url = url_for('lab1')
 
     count += 1
     return'''
@@ -122,7 +157,8 @@ def counter():
             Дата и время: ''' + str(time) + '''
             <br> Запрошенный адрес: ''' + url + '''
             <br> Ваш IP адрес: ''' + client_ip + '''
-            <br><a href="''' +  counter_clear_route + '''">Обнулить счетчик</a>
+            <br><a href="''' + counter_clear_route + '''">Обнулить счетчик</a>
+            <br><a href="''' + lab1_url + '''">Назад к лабе 1</a>
         </body>
     </html>
 '''
@@ -139,12 +175,14 @@ def clear_counter():
 
 @app.route("/lab1/create")
 def created():
+    lab1_url = url_for('lab1')
     return'''
 <!doctype html>
     <html>
         <body>
             <h1>Создано успешно!</h1>
             <div><i>Что-то создано...</i></div>
+            <br><a href="''' + lab1_url + '''">Назад к лабе 1</a>
         </body>
     </html>
 ''', 201
@@ -175,15 +213,10 @@ def error_418():
 
 @app.route("/lab1/500")
 def error_500():
-
-    a = 0
-    b = 100
-
-    return b/a
+    abort(500)
 
 @app.errorhandler(404)
 def not_found(err):
-
     return '''
 <!DOCTYPE html>
 <html lang="ru">
@@ -222,10 +255,10 @@ def not_found(err):
     </main>
 </body>
 </html>
-'''
+''', 404
 
 @app.errorhandler(500)
-def not_found(err):
+def internal_error(err):
     return '''
 <!DOCTYPE html>
 <html lang="ru">
@@ -257,4 +290,4 @@ def not_found(err):
     </main>
 </body>
 </html>
-'''
+''', 500
