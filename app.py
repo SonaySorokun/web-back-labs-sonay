@@ -167,6 +167,14 @@ def error_405():
 def error_418():
     return "Я чайник :D", 418
 
+@app.route("/lab1/500")
+def error_500():
+
+    a = 0
+    b = 100
+
+    return b/a
+
 @app.errorhandler(404)
 def not_found(err):
 
@@ -205,6 +213,41 @@ def not_found(err):
     <main>
         <h1>404</h1>
         <h2>Страница по запрашиваемому адресу не найдена</h2>
+    </main>
+</body>
+</html>
+'''
+
+@app.errorhandler(500)
+def not_found(err):
+    return '''
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка 500</title>
+    <style>
+        h1, h2 {
+            font-size: 200px;
+            color: grey;
+            text-shadow: 5px 5px 10px black;
+            text-align: center;
+            margin-bottom: 0;
+            margin-top: 60px;
+        }
+
+         h2 {
+            font-size: 40px;
+            text-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <h1>500</h1>
+        <h2>Внутренняя ошибка сервера</h2>
     </main>
 </body>
 </html>
