@@ -84,8 +84,9 @@ def author():
 def image():
     path = url_for("static", filename = "oak.jpg")
     style = url_for("static", filename = "lab1.css")
+    lab1_url = url_for('lab1')
 
-    return('''<!doctype html>
+    return'''<!doctype html>
         <html>
            <head>
                <link rel="stylesheet" href="''' + style + '''">
@@ -93,8 +94,13 @@ def image():
            <body>
                <h1>Дуб</h1>
                <img src="''' + path + '''">
+               <br><a href="''' + lab1_url + '''">Назад к лабе 1</a>
            </body>
-        </html>''')
+        </html>''', 200, {
+            'Content-Language': 'ru',
+            'X-Img-Name': 'oak',
+            'X-Hotel': 'Trivago'
+        }
 
 count = 0
 
