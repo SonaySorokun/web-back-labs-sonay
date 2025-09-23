@@ -2,8 +2,42 @@ from flask import Flask, url_for, request, redirect
 from datetime import datetime
 app = Flask(__name__)
 
+@app.route("/")
+@app.route("/index")
+def title_page():
+    lab1 = url_for("lab1")
+
+    return '''
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>НГТУ, ФБ, Лабораторные работы</title>
+</head>
+<body>
+    <header>
+        <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
+        <hr>
+    </header>
+    <main>
+        <div class="menu"> 
+            <ul>
+                <li><a href="''' + lab1 + '''">Первая лабораторная</a></li>
+            </ul>
+        </div>
+    </main>
+    <footer>
+        <hr>
+        &copy;Сорокун Соня, ФБИ-32, 3 курс, 2025
+    </footer>
+</body>
+</html>
+'''
+
+@app.route("/lab1/")
 @app.route("/lab1/web")
-def web():
+def lab1():
     return """<!doctype html>
         <html>
             <body>
@@ -17,7 +51,6 @@ def web():
 
 @app.route("/lab1/author")
 def author():
-
     name = "Сорокун Соня Романовна"
     group = "ФБИ-32"
     faculty = "ФБ"
@@ -34,7 +67,6 @@ def author():
 
 @app.route("/lab1/image")
 def image():
-
     path = url_for("static", filename = "oak.jpg")
     style = url_for("static", filename = "lab1.css")
 
@@ -57,6 +89,8 @@ def counter():
     time = datetime.today()
     url = request.url
     client_ip = request.remote_addr
+    counter_clear_route = url_for('clear_counter')
+
     count += 1
     return'''
 <!doctype html>
@@ -67,7 +101,7 @@ def counter():
             Дата и время: ''' + str(time) + '''
             <br> Запрошенный адрес: ''' + url + '''
             <br> Ваш IP адрес: ''' + client_ip + '''
-            <br><a href="http://127.0.0.1:5000/lab1/counter/clear">Обнулить счетчик</a>
+            <br><a href="''' +  counter_clear_route + '''">Обнулить счетчик</a>
         </body>
     </html>
 '''
@@ -77,10 +111,9 @@ def info():
     return redirect("/lab1/author")
 
 @app.route("/lab1/counter/clear")
-def clear_count():
+def clear_counter():
     global count
     count = 0
-
     return redirect("/lab1/counter")
 
 @app.route("/lab1/create")
