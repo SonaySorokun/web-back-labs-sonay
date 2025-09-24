@@ -352,3 +352,12 @@ def internal_error(err):
 </html>
 ''', 500
 
+
+@app.route('/lab2/a/')
+def a_slash():
+    return 'ok'
+
+@app.route('/lab2/a')
+def a():
+    return 'ok'
+   
