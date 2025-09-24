@@ -40,8 +40,20 @@ def title_page():
 </html>
 '''
 
-@app.route("/lab1/")
 @app.route("/lab1/web")
+def web():
+    return """<!doctype html>
+        <html>
+           <body>
+               <h1>web-сервер на flask </h1>
+               <a href="/lab1/author">author</a>
+           </body>
+        </html>""", 200, {
+            'X-Server': 'sample',
+            'Content-Type': 'text/plain; charset=utf-8'
+        }
+
+@app.route("/lab1/")
 def lab1():
     main_menu = url_for('title_page')
     author_url = url_for('author')
@@ -338,3 +350,4 @@ def internal_error(err):
 </body>
 </html>
 ''', 500
+
