@@ -56,6 +56,7 @@ def web():
 @app.route("/lab1/")
 def lab1():
     main_menu = url_for('title_page')
+    web_url = url_for('web')
     author_url = url_for('author')
     image_url = url_for('image')
     counter_url = url_for('counter')
@@ -92,7 +93,7 @@ def lab1():
         <h2>Список роутов</h2>
 
         <ul>
-            <li><a href="''' + url_for('lab1') + '''">/lab1/web</a></li>
+            <li><a href="''' + web_url + '''">/lab1/web</a></li>
             <li><a href="''' + author_url + '''">/lab1/author</a></li>
             <li><a href="''' + image_url + '''">/lab1/image</a></li>
             <li><a href="''' + counter_url + '''">/lab1/counter</a></li>
