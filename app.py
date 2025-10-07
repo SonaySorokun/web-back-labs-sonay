@@ -11,6 +11,7 @@ access_log = []
 @app.route("/index")
 def title_page():
     lab1 = url_for("lab1")
+    lab2 = url_for("lab2")
 
     return '''
 <!DOCTYPE html>
@@ -29,6 +30,7 @@ def title_page():
         <div class="menu"> 
             <ul>
                 <li><a href="''' + lab1 + '''">Первая лабораторная</a></li>
+                <li><a href="''' + lab2 + '''">Лабораторная работа #2</a></li>
             </ul>
         </div>
     </main>
@@ -493,3 +495,9 @@ from static.book_list import books
 def book_list():
     return render_template('books.html',
                            books=books)
+
+from static.flowers_list import tsvetochki
+
+@app.route('/lab2/tsvetochki')
+def show_berries():
+    return render_template('tsvetochki.html', items=tsvetochki)
