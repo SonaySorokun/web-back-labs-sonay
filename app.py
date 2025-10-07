@@ -486,3 +486,10 @@ def calc_default():
 @app.route('/lab2/calc/<int:a>')
 def calc_missing(a):
     return redirect(f'/lab2/calc/{a}/1')
+
+from static.book_list import books
+
+@app.route('/lab2/books')
+def book_list():
+    return render_template('books.html',
+                           books=books)
