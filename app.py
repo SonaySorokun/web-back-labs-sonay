@@ -368,21 +368,72 @@ def flowers(flower_id):
     if flower_id > len(flower_list):
         abort(404)
     else:
-        return f'Цветок: {flower_list[flower_id]}'
-
+        return f'''
+    <!doctype html>
+    <html>
+        <body>
+            <h1>Цветок: {flower_list[flower_id]}</h1>
+            <p><a href="/lab2/flowers">Все цветы</a></p>
+        </body>
+    </html>    
+    '''
+    
+@app.route('/lab2/add_flower/')
 @app.route('/lab2/add_flower/<name>')
-def add_flower(name):
-    flower_list.append(name)
+def add_flower(name=None):
+    if name:
+        flower_list.append(name)
+        return f'''
+    <!doctype html>
+    <html>
+        <body>
+            <h1>Добавлен новый цветок</h1>
+            <p>Название нового цветка: {name}</p>
+            <p>Всего цветов: {len(flower_list)}</p>
+            <p>Полный список:</p>
+            <ul>
+                {''.join(f'<li>{flower}</li>' for flower in flower_list) or '<li>Список пуст</li>'}
+            </ul>
+        </body>
+    </html>    
+    '''
+    else:
+        return f'''
+    <!doctype html>
+    <html>
+        <body>
+            <h1>Вы не задали имя цветка</h1>
+        </body>
+    </html>
+    ''', 400
+
+@app.route('/lab2/flowers')
+def list_flowers():
     return f'''
 <!doctype html>
 <html>
-    <body>
-        <h1>Добавлен новый цветок</h1>
-        <p>Название нового цветка: {name}</p>
-        <p>Всего цветов: {len(flower_list)}</p>
-        <p>Полный список: {flower_list}</p>
-    </body>
-</html>    
+  <body>
+    <h1>Список цветов</h1>
+    <p>Всего цветов: {len(flower_list)}</p>
+    <ul>
+        {''.join(f'<li>{flower}</li>' for flower in flower_list) or '<li>Список пуст</li>'}
+    </ul>
+  </body>
+</html>
+'''
+
+@app.route('/lab2/flowers/clear')
+def clear_flowers():
+    flower_list.clear()
+    return '''
+<!doctype html>
+<html>
+  <body>
+    <h1>Список цветов очищен</h1>
+    <p>Все цветы удалены из списка.</p>
+    <p><a href="/lab2/flowers">Перейти к списку всех цветов</a></p>
+  </body>
+</html>  
 '''
 
 @app.route('/lab2/example')
