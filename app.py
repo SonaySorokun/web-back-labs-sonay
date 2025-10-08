@@ -383,7 +383,7 @@ def add_flower(name=None, price=0):
         flower_list.append({'name': name, 'price': price})
         return render_template('flower_result.html', name=name, price=price, flower_list=flower_list, error=False)
     else:
-        return render_template('flower_result.html', message="Вы не задали имя цветка", error=True), 400
+        return render_template('flower_result.html', message="Вы не задали имя цветка", error=True), 404
 
 @app.route('/lab2/flowers')
 def list_flowers():
