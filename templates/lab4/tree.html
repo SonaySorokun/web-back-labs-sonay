@@ -3,10 +3,10 @@
 {% block lab %}Нравится/не нравится{% endblock %}
 
 {% block main %}
-    <div>
-        Посажено деревьев: {{ tree_count }}
-    </div>
     <form method="post">
+        <div>
+            Посажено деревьев: {{ tree_count }}
+        </div>
         <button name="operation" value="plant">Посадить дерево</button>
         <button name="operation" value="cut">Срубить дерево</button>
     </form>
