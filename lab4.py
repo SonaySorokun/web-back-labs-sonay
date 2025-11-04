@@ -192,3 +192,69 @@ def fridge():
                 message = 'Ошибка: температура должна быть числом'
 
     return render_template('lab4/fridge.html', message=message, snowflakes=snowflakes, temperature=temp_value)
+
+
+@lab4.route('/lab4/grain', methods=['GET', 'POST'])
+def grain():
+    grains = {
+        'barley': {'title': 'ячмень', 'price': 12000},
+        'oats': {'title': 'овёс', 'price': 8500},
+        'wheat': {'title': 'пшеница', 'price': 9000},
+        'rye': {'title': 'рожь', 'price': 15000},
+    }
+
+    if request.method == 'GET':
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error=None)
+
+    grain_code = request.form.get('grain')
+    weight_str = request.form.get('weight')
+
+    if not weight_str:
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error='Ошибка: не указан вес')
+
+    try:
+        weight = float(weight_str)
+    except ValueError:
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error='Ошибка: вес должен быть числом')
+
+    if weight <= 0:
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error='Ошибка: вес должен быть больше 0')
+
+    if weight > 100:
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error='Такого объёма сейчас нет в наличии')
+
+    grain_obj = grains.get(grain_code)
+    if not grain_obj:
+        return render_template('lab4/grain.html',
+                               grains=grains,
+                               error='Ошибка: не выбрано зерно')
+
+    price_per_ton = grain_obj['price']
+    base_sum = weight * price_per_ton
+
+    discount = 0
+    final_sum = base_sum
+
+    if weight > 10:
+        discount = base_sum * 0.10
+        final_sum = base_sum - discount
+
+    return render_template('lab4/grain.html',
+                           grains=grains,
+                           error=None,
+                           success=True,
+                           grain_title=grain_obj['title'],
+                           weight=weight,
+                           base_sum=base_sum,
+                           final_sum=final_sum,
+                           discount=discount)
