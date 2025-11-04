@@ -124,7 +124,7 @@ users = [
     {'login': 'max', 'password': '457', 'name': 'Максим Ерловец', 'gender': 'm'},
     {'login': 'anton', 'password': 'fghfgh', 'name': 'Антон Гаврилин', 'gender': 'm'},
     {'login': 'egor', 'password': 'weqweq', 'name': 'Егор Манилов', 'gender': 'm'},
-    {'login': 'Janna', 'password': '999', 'name': 'Жанна Азарян', 'gender': 'm'},
+    {'login': 'Janna', 'password': '999', 'name': 'Жанна Азарян', 'gender': 'f'},
 ]
 
 @lab4.route('/lab4/login', methods = ['GET', 'POST'])
