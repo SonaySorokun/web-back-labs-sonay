@@ -4,19 +4,19 @@ body {
     font-family: arial;
     margin: 0px;
   }
-  main {
+main {
     margin: 10px 20px 56px;
   }
-  header {
+header {
     background-color: rgb(66, 42, 91);
-    color: white;
+    color: rgb(247, 238, 234);
     padding: 10px;
     font-size: 16px;
     text-align: left;
   }
-  footer {
+footer {
     background-color: rgb(66, 42, 91);
-    color: white;
+    color: rgb(247, 238, 234);
     padding: 10px;
     width: 100%;
     font-size: 16px;
@@ -26,7 +26,7 @@ body {
     right: 0;
   }
 
-  h1 {
+h1 {
     color: rgb(66, 42, 91);
     text-align: center;
     font-weight: bold;
@@ -34,3 +34,63 @@ body {
     font-size: 40px;
     margin: 40px 20%;
   }
+
+h2 {
+    color: rgb(66, 42, 91);
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+button {
+    background: rgb(66, 42, 91);
+    color: rgb(247, 238, 234);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 10px 5px;
+}
+
+button:hover {
+    background: rgb(124, 102, 153);
+}
+
+/* Формы */
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgb(247, 238, 234);
+    border: 2px solid rgb(66, 42, 91);
+    border-radius: 5px;
+}
+
+/* Поля ввода */
+form input[type="text"],
+form input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid rgb(66, 42, 91);
+    border-radius: 3px;
+}
+
+/* Чекбоксы и радиокнопки */
+form input[type="checkbox"],
+form input[type="radio"] {
+    margin-right: 8px;
+}
+
+form input[type="date"] {
+    margin: 10px 0;
+}
+
+form label {
+    display: block;
+    margin: 8px 0;
+    padding: 5px;
+}
+
+form select {
+    margin: 10px 0;
+}
