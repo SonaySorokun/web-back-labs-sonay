@@ -74,7 +74,8 @@ form {
 
 /* Поля ввода */
 form input[type="text"],
-form input[type="number"] {
+form input[type="number"],
+form input[type="password"] {
     width: 100%;
     padding: 8px;
     margin: 5px 0;
