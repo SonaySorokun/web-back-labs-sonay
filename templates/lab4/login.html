@@ -4,6 +4,7 @@
 {% block main %}
     {% if authorized %}
         <h1>Добро пожаловать, {{ name }}!</h1>
+        <a href="/lab4/users">Список пользователей</a>
 
         {% if success %}
             <p style="color: green; text-align: center">{{ success }}</p>

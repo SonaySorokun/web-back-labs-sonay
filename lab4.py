@@ -149,7 +149,7 @@ def login():
     for user in users:
         if login_value == user['login'] and password == user['password']:
                 session['login'] = login_value
-                return redirect('/lab4/users')
+                return redirect('/lab4/login')
 
     return render_template('lab4/login.html', authorized=False, error='Неверные логин или пароль', login=login_value)
 
