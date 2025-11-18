@@ -49,5 +49,6 @@
         <a href="/lab5/list" class="nav-button">Список статей</a>
         <a href="/lab5/create" class="nav-button">Создать статью</a>
         <p class="username-placeholder">👤 {% if not login %}Anonymous{% else %}{{ login }}{% endif %}</p>
+        <a href="/lab5/logout" class="nav-button" style="background: rgb(231, 46, 46); {% if not login %} display: none {% endif %}">Выйти</a>
     </div>
 {% endblock %}
