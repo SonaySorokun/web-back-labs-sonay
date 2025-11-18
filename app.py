@@ -5,6 +5,7 @@ from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
+from lab5 import lab5
 
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
 app.register_blueprint(lab4)
+app.register_blueprint(lab5)
 
 
 @app.route("/")
@@ -23,6 +25,7 @@ def title_page():
     lab2_url = url_for("lab2.lab")
     lab3_url = url_for("lab3.lab")
     lab4_url = url_for("lab4.lab")
+    lab5_url = url_for("lab5.lab")
 
 
     return '''
@@ -45,6 +48,7 @@ def title_page():
                 <li><a href="''' + lab2_url + '''">Лабораторная работа #2</a></li>
                 <li><a href="''' + lab3_url + '''">Лабораторная работа #3</a></li>
                 <li><a href="''' + lab4_url + '''">Лабораторная работа #4</a></li>
+                <li><a href="''' + lab5_url + '''">Лабораторная работа #5</a></li>
             </ul>
         </div>
     </main>
