@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+<style>
+    .article {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 30px;
+    background: rgb(245, 243, 240);
+    border: 2px solid rgb(75, 51, 102);
+    border-radius: 5px;
+}
+</style>
+    <h1>Статьи</h1>
+    {% for article in articles %}
+        <div class="article">
+            <h2>{{ article['title'] }}</h2>
+            <blockquote>{{ article['article_text'] }}</blockquote>
+        </div>
+    {% endfor %}
+{% endblock %}
