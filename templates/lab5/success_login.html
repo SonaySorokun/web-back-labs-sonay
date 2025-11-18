@@ -7,8 +7,8 @@
 {% block main %}
 <style>
     .nav-button {
-        background: rgb(73, 51, 102);
-        color: rgb(245, 243, 240);
+        background: rgb(81, 51, 102);
+        color: white;
         padding: 10px 20px;
         border: none;
         border-radius: 3px;
@@ -17,12 +17,12 @@
     }
 
     .nav-button:hover {
-        background: rgb(126, 102, 153);
+        background: rgb(131, 102, 153);
     }
 </style>
     <h1>Аутентификация прошла успешно!</h1>
     <form>
-        <h2>Добро пожаловать, {{ login }}</h2>
+        <h2>Добро пожаловать, {{ name }}</h2>
         <br>
         <div>
             <a href="/lab5/" class="nav-button">Перейти</a>

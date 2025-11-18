@@ -7,7 +7,7 @@
 {% block main %}
 <style>
     .nav-button {
-        background: rgb(80, 51, 102);
+        background: rgb(71, 51, 102);
         color: white;
         padding: 10px 20px;
         border: none;
@@ -17,15 +17,21 @@
     }
 
     .nav-button:hover {
-        background: rgb(135, 102, 153);
+        background: rgb(118, 102, 153);
     }
 </style>
-    <h1>Вы успешно зарегистрировались!</h1>
+    <h1>Список пользователей</h1>
     <form>
-        <h2>Добро пожаловать, {{ name }}</h2>
+        <ul>
+            {% for user in users %}
+                <li>
+                    {{ user['name'] }}, логин: {{ user['login'] }}
+                </li>
+            {% endfor %}
+        </ul>
         <br>
         <div>
-            <a href="/lab5/" class="nav-button">Перейти</a>
+            <a href="/lab5/" class="nav-button">Назад</a>
         </div>
     </form>
 {% endblock %}
