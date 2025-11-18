@@ -48,6 +48,6 @@
         <a href="/lab5/register" class="nav-button">Регистрация</a>
         <a href="/lab5/list" class="nav-button">Список статей</a>
         <a href="/lab5/create" class="nav-button">Создать статью</a>
-        <p class="username-placeholder">👤 {{ username }}</p>
+        <p class="username-placeholder">👤 {% if not login %}Anonymous{% else %}{{ login }}{% endif %}</p>
     </div>
 {% endblock %}
