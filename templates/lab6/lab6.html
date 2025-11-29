@@ -29,7 +29,8 @@ function getOfficeList() {
         for(let i = 0; i < office_list.length; i++) {
             const office = office_list[i];
             const li = document.createElement('li');
-            li.innerText = `${office.number}: - ${office.tenant || 'свободен'}`;
+            
+            li.innerText = `Офис ${office.number} - ${office.price || '1000'} руб./день - ${office.tenant || 'свободен'}`;
 
             li.appendChild(document.createTextNode(' '));
 
