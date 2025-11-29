@@ -71,7 +71,8 @@ function booking(officeNumber) {
             }
         }
         else {
-            document.getElementById('office-list')
+            document.getElementById('office-list').innerHTML = '';
+            getOfficeList();
         }
     });
 }
