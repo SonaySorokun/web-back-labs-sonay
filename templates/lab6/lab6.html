@@ -26,6 +26,8 @@ function getOfficeList() {
         const ul = document.getElementById('office-list');
         ul.innerHTML = '';
         
+        let totalCost = 0;
+        
         for(let i = 0; i < office_list.length; i++) {
             const office = office_list[i];
             const li = document.createElement('li');
@@ -48,11 +50,18 @@ function getOfficeList() {
                 button.className = 'btn-cancel';
                 button.innerText = 'отменить бронь';
                 button.onclick = function() { cancelBooking(office.number); };
+                
+                const userLogin = '{{ session.get("login", "") }}';
+                if (office.tenant === userLogin) {
+                    totalCost += parseFloat(office.price) || 1000;
+                }
             }
 
             li.appendChild(button);
             ul.appendChild(li);
         }
+        
+        updateTotalCost(totalCost);
     });
 }
 
@@ -137,6 +146,21 @@ function cancelBooking(officeNumber) {
     });
 }
 
+function updateTotalCost(total) {
+    let totalDiv = document.getElementById('total-cost');
+    if (!totalDiv) {
+        totalDiv = document.createElement('div');
+        totalDiv.id = 'total-cost';
+        document.querySelector('main').appendChild(totalDiv);
+    }
+    
+    if (total > 0) {
+        totalDiv.innerHTML = `<h3>Общая стоимость ваших офисов: ${total} руб./день</h3>`;
+    } else {
+        totalDiv.innerHTML = '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     getOfficeList();
 })
@@ -204,6 +228,21 @@ document.addEventListener('DOMContentLoaded', function() {
     .btn-cancel {
         background: #ff6b6b;
         color: white;
+    }
+
+    #total-cost {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 15px;
+        background: #e6f7ff;
+        border: 2px solid #1890ff;
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    #total-cost h3 {
+        margin: 0;
+        color: #0050b3;
     }
 </style>
     <h1>Список кабинетов</h1>
