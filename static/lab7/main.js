@@ -59,6 +59,7 @@ function showModal() {
 }
 
 function hideModal() {
+    document.getElementById('description-error').innerText = '';
     document.querySelector('div.modal').style.display = 'none';
 }
 
@@ -72,6 +73,7 @@ function addFilm() {
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+    document.getElementById('description-error').innerText = '';
     showModal();
 }
 
@@ -92,9 +94,19 @@ function sendFilm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(film)
     })
-        .then(function () {
-            fillFilmList();
-            hideModal();
+        .then(function (resp) {
+            if (resp.ok) {
+                fillFilmList();
+                hideModal();
+            }
+            return resp.json();
+        })
+        .then(function (errors ) {
+            if (errors && errors.description)
+                document.getElementById('description-error').innerText = errors.description;
+        })
+        .catch(function (error) {  
+            console.error('Ошибка:', error);
         });
 }
 
@@ -111,4 +123,7 @@ function editFilm(id) {
             document.getElementById('description').value = film.description;
             showModal();
         })
+                .catch(function (error) {  
+            console.error('Ошибка при загрузке фильма:', error);
+        });
 }
