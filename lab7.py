@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, abort
 lab7 = Blueprint('lab7', __name__)
 
 @lab7.route('/lab7/')
-def main():
+def lab():
  render_template('lab7/index.html')
 
 films = [
