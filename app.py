@@ -33,6 +33,7 @@ def title_page():
     lab4_url = url_for("lab4.lab")
     lab5_url = url_for("lab5.lab")
     lab6_url = url_for("lab6.lab")
+    lab7_url = url_for("lab7.lab")
 
 
     return '''
@@ -57,6 +58,7 @@ def title_page():
                 <li><a href="''' + lab4_url + '''">Лабораторная работа #4</a></li>
                 <li><a href="''' + lab5_url + '''">Лабораторная работа #5</a></li>
                 <li><a href="''' + lab6_url + '''">Лабораторная работа #6</a></li>
+                <li><a href="''' + lab7_url + '''">Лабораторная работа #7</a></li>
             </ul>
         </div>
     </main>
