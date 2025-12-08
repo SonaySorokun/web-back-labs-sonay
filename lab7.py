@@ -1,88 +1,40 @@
-from flask import Blueprint, render_template, request, abort, jsonify
+from flask import Blueprint, render_template, request, abort, jsonify, current_app
 from datetime import datetime
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import sqlite3
+from os import path
 
 lab7 = Blueprint('lab7', __name__)
+
+def db_connect():
+    if current_app.config['DB_TYPE'] == 'postgres':
+        conn = psycopg2.connect(
+            host='127.0.0.1',
+            database='knowledge_base_db',
+            user='sonay_sorokun_knowledge_base',
+            password='123a',
+            client_encoding='utf8'
+        )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    
+    return conn, cur
+
+def db_close(conn, cur):
+    """Закрытие соединения с базой данных"""
+    conn.commit()
+    cur.close()
+    conn.close()
 
 @lab7.route('/lab7/')
 def lab():
     return render_template('lab7/index.html')
-
-films = [
-    {
-        "title": "Spirited Away",
-        "title_ru": "Унесённые призраками",
-        "year": 2001,
-        "description": "Десятилетняя Тихиро Огино вместе с родителями переезжает в новый дом.\
-        Свернув на таинственную лесную тропу, они оказываются в странном пустом городе, где её\
-        родителей волшебство превращает в свиней. Чтобы спасти их и вернуться в свой мир, Тихиро\
-        вынуждена работать в огромном бане для духов, принадлежащем колдунье Юбабе. Ей предстоит\
-        найти в себе смелость, обрести верных друзей и вспомнить своё настоящее имя."
-    },
-    {
-        "title": "My Neighbor Totoro",
-        "title_ru": "Мой сосед Тоторо",
-        "year": 1988,
-        "description": "Сёстры Сацуки и Мэй переезжают с отцом в старый дом в деревне, чтобы быть\
-        ближе к больной матери. Исследуя окрестности, младшая Мэй встречает огромное пушистое\
-        лесное существо — Тоторо, Хранителя леса. Он и другие волшебные обитатели помогают девочкам\
-        пережить трудное время, открывая для них мир чудес, скрытый от глаз взрослых."
-    },
-    {
-        "title": "Princess Mononoke",
-        "title_ru": "Принцесса Мононокэ",
-        "year": 1997,
-        "description": "Молодой принц Аситака, поражённый проклятием смертельного ранения, отправляется\
-        на западные земли в поисках исцеления. Там он оказывается в эпицентре войны между людьми\
-        железного города Татараба и древними богами леса во главе со свирепой девой-волчицей Сан\
-        (Принцессой Мононокэ). Аситаке предстоит найти способ примирить два мира, пока они не уничтожили друг друга."
-    },
-    {
-        "title": "Howl's Moving Castle",
-        "title_ru": "Ходячий замок",
-        "year": 2004,
-        "description": "Скромную шляпницу Софи по прихоти Болотной Ведьмы превращает в дряхлую старуху.\
-        В поисках способа снять проклятие она знакомится с таинственным и красивým волшебником Хаулом,\
-        живущим в фантастическом ходячем замке, и его демоном-хранителем огня Кальцифером. Их встреча\
-        запускает череду событий, которые могут остановить бессмысленную войну и изменить судьбы всех."
-    },
-    {
-        "title": "Nausicaä of the Valley of the Wind",
-        "title_ru": "Навсикая из Долины Ветров",
-        "year": 1984,
-        "description": "Спустя тысячу лет после «Семи дней огня», уничтожившего цивилизацию, человечество\
-        выживает на окраинах Ядовитого Леса — огромной экосистемы грибов и гигантских насекомых. Принцесса\
-        Навсикая, обладающая даром понимания природы, пытается защитить свою мирную долину от агрессивного\
-        соседнего королевства, которое стремится развязать древнее оружие, не понимая истинной роли Леса и его хозяев — омов."
-    },
-    {
-        "title": "Kiki's Delivery Service",
-        "title_ru": "Ведьмина служба доставки",
-        "year": 1989,
-        "description": "По традиции, юная ведьма Кики в 13 лет должна год прожить самостоятельно в чужом\
-        городе. Вместе со своим говорящим чёрным котом Дзидзи она поселяется в приморском городе Корико.\
-        Используя своё умение летать на метле, Кики открывает службу доставки. Через новые знакомства,\
-        трудности и временную потерю магии она учится взрослеть, верить в себя и находить своё место в мире."
-    },
-    {
-        "title": "Castle in the Sky",
-        "title_ru": "Небесный замок Лапута",
-        "year": 1986,
-        "description": "Девочка Шита, обладающая таинственным левитирующим камнем, спасается от пиратов\
-        и агентов правительства с помощью сироты Падзу. Вместе они отправляются на поиски легендарного\
-        летающего острова-крепости Лапута, о котором когда-то рассказывал отец Падзу. Их преследуют и\
-        пираты, жаждущие сокровищ, и агенты, мечтающие заполутить древнюю разрушительную мощь Лапуты."
-    },
-    {
-        "title": "Ponyo on the Cliff by the Sea",
-        "title_ru": "Рыбка Поньо на утёсе",
-        "year": 2008,
-        "description": "Пятилетний мальчик Сосукэ живёт в доме на утёсе. Однажды он находит на берегу\
-        золотую рыбку по имени Поньо, дочь могущественного волшебника Фудзимото и морской богини\
-        Грана-Маммы. Привязавшись к мальчику, Поньо желает стать человеком. Её магическая сила,\
-        нарушающая баланс мира, вызывает цунами, и теперь Сосукэ должен доказать силу своей любви,\
-        чтобы спасти Поньо и восстановить порядок."
-    }
-]
 
 def validate_film(film):
     errors = {}
@@ -108,56 +60,201 @@ def validate_film(film):
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_all_films():
-    return jsonify(films)
+    conn, cur = db_connect()
+    
+    try:
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT id, title, title_ru, year, description FROM films ORDER BY id;")
+        else:
+            cur.execute("SELECT id, title, title_ru, year, description FROM films ORDER BY id;")
+        
+        films_data = cur.fetchall()
+        
+        films_list = []
+        for film in films_data:
+            if current_app.config['DB_TYPE'] == 'postgres':
+                films_list.append({
+                    "id": film['id'],
+                    "title": film['title'],
+                    "title_ru": film['title_ru'],
+                    "year": film['year'],
+                    "description": film['description']
+                })
+            else:
+                films_list.append({
+                    "id": film[0],
+                    "title": film[1],
+                    "title_ru": film[2],
+                    "year": film[3],
+                    "description": film[4]
+                })
+        
+        return jsonify(films_list)
+    finally:
+        db_close(conn, cur)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_films(id):
-    if id < 0 or id >= len(films):
-        abort(404) 
-    return films[id]
+
+    conn, cur = db_connect()
+    try:
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT id, title, title_ru, year, description FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("SELECT id, title, title_ru, year, description FROM films WHERE id = ?;", (id,))
+        
+        film_data = cur.fetchone()
+        
+        if not film_data:
+            abort(404)
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            film = {
+                "id": film_data['id'],
+                "title": film_data['title'],
+                "title_ru": film_data['title_ru'],
+                "year": film_data['year'],
+                "description": film_data['description']
+            }
+        else:
+            film = {
+                "id": film_data[0],
+                "title": film_data[1],
+                "title_ru": film_data[2],
+                "year": film_data[3],
+                "description": film_data[4]
+            }
+        
+        return jsonify(film)
+    finally:
+        db_close(conn, cur)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    if id < 0 or id >= len(films):
-        abort(404)
-    del films[id]
-    return '', 204
+    conn, cur = db_connect()
+    
+    try:
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT id FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("SELECT id FROM films WHERE id = ?;", (id,))
+        
+        film = cur.fetchone()
+        
+        if not film:
+            abort(404)
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("DELETE FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("DELETE FROM films WHERE id = ?;", (id,))
+        
+        return '', 204
+    finally:
+        db_close(conn, cur)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    if id < 0 or id >= len(films):
-        abort(404)
-    film = request.get_json()
-
-    if not film.get('description') or film['description'].strip() == '':
-        return {"description": "Описание не может быть пустым"}, 400
+    conn, cur = db_connect()
     
-    errors = validate_film(film)
-    if errors:
-        return jsonify(errors), 400
-
-    if (not film.get('title') or film['title'].strip() == '') and film.get('title_ru'):
-        film['title'] = film['title_ru']
-
-    films[id] = film
-    return films[id]
+    try:
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT id FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("SELECT id FROM films WHERE id = ?;", (id,))
+        
+        film_exists = cur.fetchone()
+        
+        if not film_exists:
+            abort(404)
+        
+        film = request.get_json()
+        if not film:
+            abort(400, description="No data provided")
+        
+        errors = validate_film(film)
+        if errors:
+            return jsonify(errors), 400
+        
+        title = film.get('title', '').strip()
+        title_ru = film.get('title_ru', '').strip()
+        if not title and title_ru:
+            title = title_ru
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("""
+                UPDATE films 
+                SET title = %s, title_ru = %s, year = %s, description = %s 
+                WHERE id = %s
+                RETURNING id, title, title_ru, year, description;
+            """, (title, title_ru, film['year'], film['description'], id))
+        else:
+            cur.execute("""
+                UPDATE films 
+                SET title = ?, title_ru = ?, year = ?, description = ? 
+                WHERE id = ?
+            """, (title, title_ru, film['year'], film['description'], id))
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            updated_film = cur.fetchone()
+            result = {
+                "id": updated_film['id'],
+                "title": updated_film['title'],
+                "title_ru": updated_film['title_ru'],
+                "year": updated_film['year'],
+                "description": updated_film['description']
+            }
+        else:
+            cur.execute("SELECT id, title, title_ru, year, description FROM films WHERE id = ?;", (id,))
+            film_data = cur.fetchone()
+            result = {
+                "id": film_data[0],
+                "title": film_data[1],
+                "title_ru": film_data[2],
+                "year": film_data[3],
+                "description": film_data[4]
+            }
+        
+        return jsonify(result)
+    finally:
+        db_close(conn, cur)
 
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_films():
-    film = request.get_json()
-    if not film:
-        abort(400, description="No data provided")
+    conn, cur = db_connect()
 
-    if not film.get('description') or film['description'].strip() == '':
-        return {"description": "Описание не может быть пустым"}, 400
-    
-    errors = validate_film(film)
-    if errors:
-        return jsonify(errors), 400
-    
-    if (not film.get('title') or film['title'].strip() == '') and film.get('title_ru'):
-        film['title'] = film['title_ru']
-
-    films.append(film)
-    return {"id": len(films) - 1}, 201
+    try:
+        film = request.get_json()
+        if not film:
+            abort(400, description="No data provided")
+        
+        errors = validate_film(film)
+        if errors:
+            return jsonify(errors), 400
+        
+        title = film.get('title', '').strip()
+        title_ru = film.get('title_ru', '').strip()
+        if not title and title_ru:
+            title = title_ru
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("""
+                INSERT INTO films (title, title_ru, year, description) 
+                VALUES (%s, %s, %s, %s) 
+                RETURNING id;
+            """, (title, title_ru, film['year'], film['description']))
+        else:
+            cur.execute("""
+                INSERT INTO films (title, title_ru, year, description) 
+                VALUES (?, ?, ?, ?);
+            """, (title, title_ru, film['year'], film['description']))
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            new_id = cur.fetchone()['id']
+        else:
+            new_id = cur.lastrowid
+        
+        return {"id": new_id}, 201
+    finally:
+        db_close(conn, cur)

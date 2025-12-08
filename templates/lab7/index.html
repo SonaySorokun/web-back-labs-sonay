@@ -25,57 +25,46 @@
 {% endblock %}
 
 {% block main %}
-
     <h1>Список фильмов</h1>
-
     <table>
         <thead>
             <tr>
-                <th>Название на русском</th>
-                <th>Оригинальное название</th>
+                <th colspan="2">Название</th>
                 <th>Год</th>
                 <th>Действие</th>
             </tr>
         </thead>
         <tbody id="film-list"></tbody>
     </table>
-
     <script>
         fillFilmList();
     </script>
-
-
     <div>
-        <button onclick="addFilm() " style="margin-top:10px; ;">Добавить фильм</button>
+        <button onclick="addFilm()">Добавить фильм</button>
     </div>
-
     <div class="modal">
         <input type="hidden" id="id">
         <label>
-            Название фильма на русском языке:
+            Название фильма на русском:
             <input type="text" id="title-ru">
             <div id="title-ru-error" class="error-message"></div>
         </label><br>
-
         <label>
             Название фильма на оригинальном языке
             <i>(если фильм русский, то оставьте пустым):</i>
             <input type="text" id="title">
             <div id="title-error" class="error-message"></div>
-        </label>
-
+        </label><br>
         <label>
             Год выпуска:
             <input type="number" id="year">
-        </label>
-
-        <label>
-            Описание:
-            <textarea id="description"></textarea>
-            <div id="description-error" class="error-mesage"></div>
             <div id="year-error" class="error-message"></div>
         </label><br>
-
+        <label>
+            Описание:
+            <textarea id="description" maxlength="2000"></textarea>
+            <div id="description-error" class="error-message"></div>
+        </label><br>
         <button onclick="sendFilm()">ОК</button>
         <button onclick="cancel()">Отмена</button>
     </div>
