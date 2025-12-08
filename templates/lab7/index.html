@@ -16,6 +16,11 @@
         position: absolute;
         padding: 20px;
     }
+
+    #film-list td:nth-child(2) {
+    color: #5c503f;
+    font-style: italic;
+}
 </style>
 {% endblock %}
 
@@ -26,7 +31,8 @@
     <table>
         <thead>
             <tr>
-                <th colspan="2">Название</th>
+                <th>Название на русском</th>
+                <th>Оригинальное название</th>
                 <th>Год</th>
                 <th>Действие</th>
             </tr>
@@ -40,7 +46,7 @@
 
 
     <div>
-        <button onclick="addFilm()">Добавить фильм</button>
+        <button onclick="addFilm() " style="margin-top:10px; ;">Добавить фильм</button>
     </div>
 
     <div class="modal">
@@ -54,12 +60,12 @@
             Название фильма на оригинальном языке
             <i>(если фильм русский, то оставьте пустым):</i>
             <input type="text" id="title">
-        </label><br>
+        </label>
 
         <label>
             Год выпуска:
             <input type="number" id="year">
-        </label><br>
+        </label>
 
         <label>
             Описание:

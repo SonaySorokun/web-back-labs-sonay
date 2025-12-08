@@ -14,8 +14,8 @@ function fillFilmList() {
                 let tdYear = document.createElement('td');
                 let tdActions = document.createElement('td');
 
-                tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title;
                 tdTitleRus.innerText = films[i].title_ru;
+                tdTitle.innerText = films[i].title || films[i].title_ru;
                 tdYear.innerText = films[i].year;
 
                 let ediButton = document.createElement('button');
@@ -75,6 +75,15 @@ function addFilm() {
     document.getElementById('description').value = '';
     document.getElementById('description-error').innerText = '';
     showModal();
+
+    const titleRuInput = document.getElementById('title-ru');
+    const titleInput = document.getElementById('title');
+
+    titleRuInput.addEventListener('input', function () {
+        if (!titleInput.value.trim()) {
+            titleInput.value = this.value;
+        }
+    });
 }
 
 function sendFilm() {
