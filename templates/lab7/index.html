@@ -54,12 +54,14 @@
         <label>
             Название фильма на русском языке:
             <input type="text" id="title-ru">
+            <div id="title-ru-error" class="error-message"></div>
         </label><br>
 
         <label>
             Название фильма на оригинальном языке
             <i>(если фильм русский, то оставьте пустым):</i>
             <input type="text" id="title">
+            <div id="title-error" class="error-message"></div>
         </label>
 
         <label>
@@ -71,6 +73,7 @@
             Описание:
             <textarea id="description"></textarea>
             <div id="description-error" class="error-mesage"></div>
+            <div id="year-error" class="error-message"></div>
         </label><br>
 
         <button onclick="sendFilm()">ОК</button>
