@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort, jsonify, current_app, redirect,session
+from flask import Blueprint, render_template, request, abort, jsonify, current_app, redirect,session, flash
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 import psycopg2
@@ -79,11 +79,11 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
-@lab8.route('/lab8/create.html', methods=['GET', 'POST'])
+@lab8.route('/lab8/create', methods=['GET', 'POST'])  # ИЗМЕНИТЬ: убрать .html
 @login_required
-def create():
+def create_article():  # ИЗМЕНИТЬ: переименовать функцию для ясности
     if request.method == 'GET':
-        return render_template('lab8/create.html')
+        return render_template('lab8/create.html')  # ИЗМЕНИТЬ: добавить .html
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
