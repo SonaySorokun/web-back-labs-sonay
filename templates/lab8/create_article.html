@@ -1,44 +1,38 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 8{% endblock %}
+{% block lab %}Лабораторная работа 8 - Создание статьи{% endblock %}
 
 {% block main %}
-    <h1>Создание статей</h1>
-
-        {% if error %}
+    <h1>Создание новой статьи</h1>
+    
+    {% if error %}
     <div class="error">
-    <form method="post">
-        <div>
+        <strong>Ошибка:</strong> {{ error }}
+    </div>
+    {% endif %}
+    <form action="/lab8/create" method="post">
+        <div style="margin-bottom: 15px;">
             <label>
-                Название статьи:
+                Название статьи:<br>
                 <input type="text" maxlength="50" name="title" >
             </label>
         </div>
-
-        <div>
-            Текст статьи:
-                <textarea name="article_text" rows="10" style="width: 100%; padding: 5px;" >{{ article_text if article_text else '' }}</textarea>
-        </div>
-
-        <div>
+        <div style="margin-bottom: 15px;">
             <label>
-                <input type="checkbox" name="is_favorite">
-                Добавить в избранное
+                Текст статьи:<br>
+                <textarea name="article_text" rows="10" style="width: 100%; padding: 5px;" >{{ article_text if article_text else '' }}</textarea>
             </label>
         </div>
-
-         <div>
+        <div style="margin-bottom: 15px;">
             <label>
-                <input type="checkbox" name="is_public">
+                <input type="checkbox" name="is_public" value="true" {% if is_public %}checked{% endif %}>
                 Сделать публичной
             </label>
         </div>
-
+        
         <div>
-            <button type="submit">Создать статью</button>
+            <button type="submit" style="padding: 10px 20px;">Создать статью</button>
             <a href="/lab8/" style="margin-left: 10px;">Отмена</a>
         </div>
-
-
     </form>
 {% endblock %}

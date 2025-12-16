@@ -3,84 +3,42 @@
 {% block lab %}Лабораторная работа 8{% endblock %}
 
 {% block main %}
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h1 style="color: #333; margin-bottom: 20px;">Мои статьи</h1>
+    <h1>Мои статьи</h1>
 
-        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <form action="/lab8/articles" method="get" style="display: flex; gap: 10px;">
-                <input type="text" name="query" placeholder="Поиск..." 
-                       value="{{ query if query else '' }}" 
-                       style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                <button type="submit" style="padding: 10px 20px; background: #4a90e2; color: white; border: none; border-radius: 5px;">
-                    Найти
-                </button>
-            </form>
-            {% if query %}
-                <div style="margin-top: 10px;">
-                    <span style="color: #666;">Найдено по запросу: </span>
-                    <strong>"{{ query }}"</strong>
-                    <a href="/lab8/articles" style="color: #4a90e2; margin-left: 10px;">Сбросить</a>
-                </div>
-            {% endif %}
-        </div>
-
-        {% if not articles %}
-            <div style="text-align: center; padding: 40px 20px; color: #888;">
-                <div style="font-size: 48px; margin-bottom: 10px;">📄</div>
-                <p style="font-size: 18px; margin-bottom: 20px;">
-                    {% if query %}
-                        Статьи не найдены
-                    {% else %}
-                        Статей пока нет
-                    {% endif %}
-                </p>
-                <a href="/lab8/create" style="display: inline-block; padding: 10px 20px; background: #4a90e2; color: white; text-decoration: none; border-radius: 5px;">
-                    Создать статью
-                </a>
-            </div>
+    <form action="/lab8/articles" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="query" placeholder="Поиск по моим статьям..." 
+               value="{{ query if query else '' }}" style="padding: 8px; width: 300px;">
+        <button type="submit" style="padding: 8px 15px;">Найти</button>
+        {% if query %}
+            <a href="/lab8/articles" style="margin-left: 10px;">Сбросить поиск</a>
         {% endif %}
+    </form>
 
+    {% if query %}
+        <p style="margin-bottom: 15px;">
+            Результаты поиска по запросу: "<strong>{{ query }}</strong>"
+        </p>
+    {% endif %}
+
+    {% if not articles %}
+        <p>{% if query %}Ничего не найдено{% else %}У вас пока нет статей. <a href="/lab8/create">Создайте первую статью!</a>{% endif %}</p>
+    {% else %}
         {% for article in articles %}
-            <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h2 style="margin: 0; color: #222;">
-                        {% if article.is_favorite %}⭐ {% endif %}{{ article.title }}
-                    </h2>
-                    <span style="padding: 4px 12px; background: {% if article.is_public %}#e8f5e9{% else %}#ffebee{% endif %}; 
-                          color: {% if article.is_public %}#2e7d32{% else %}#c62828{% endif %}; 
-                          border-radius: 20px; font-size: 14px;">
-                        {{ 'Публичная' if article.is_public else 'Приватная' }}
-                    </span>
-                </div>
+             <div style="border: 1px solid #c2b5b5; padding: 15px; margin-bottom: 15px; border-radius: 5px; {% if article.is_favorite %}background-color: #fffacd;{% endif %}">
                 
-                <p style="color: #898585; line-height: 1.5; margin: 10px 0 15px 0;">
-                    {{ article.article_text[:150] }}{% if article.article_text|length > 150 %}...{% endif %}
-                </p>
-                
-                <div style="border-top: 1px solid #f5e1e1; padding-top: 10px;">
-                    <a href="/lab5/edit/{{ article['id'] }}" style="color: #6799d1; text-decoration: none; margin-right: 15px;">
-                        Редактировать
-                    </a>
-                    <a href="/lab5/delete/{{ article['id'] }}" 
-                       style="color: #a64645; text-decoration: none;"
-                       onclick="return confirm('Удалить статью?')">
-                        Удалить
-                    </a>
+                <h2>{{ article.title }}</h2>  
+                <blockquote>{{ article.article_text }}</blockquote> 
+                <div>
+                    {% if article.is_public %}
+                        <span style="color: rgb(142, 216, 142); margin-right: 10px;">Публичная</span>
+                    {% else %}
+                        <span style="color: rgb(143, 105, 105); margin-right: 10px;">Приватная</span>
+                    {% endif %}
+                    <a href="/lab8/edit/{{ article.id }}" style=" margin-right: 10px;">Редактировать</a>  
+                    <a href="/lab8/delete/{{ article.id }}" style="color: rgb(202, 103, 103);" 
+                       onclick="return confirm('Вы уверены, что хотите удалить эту статью?')">Удалить</a>  
                 </div>
             </div>
         {% endfor %}
-
-        {% if articles %}
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="/lab8/create" style="display: inline-block; padding: 12px 25px; background: #4a90e2; color: white; 
-                   text-decoration: none; border-radius: 5px; margin-right: 10px;">
-                    Новая статья
-                </a>
-                <a href="/lab8/" style="display: inline-block; padding: 12px 25px; background: #f5f5f5; color: #333; 
-                   text-decoration: none; border-radius: 5px;">
-                    На главную
-                </a>
-            </div>
         {% endif %}
-    </div>
 {% endblock %}
