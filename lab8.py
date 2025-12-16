@@ -79,7 +79,7 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
-@lab8.route('/lab8/create', methods=['GET', 'POST'])
+@lab8.route('/lab8/create_article.html', methods=['GET', 'POST'])
 @login_required
 def create_article():
     if request.method == 'GET':
