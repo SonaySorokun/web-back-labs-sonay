@@ -30,7 +30,7 @@ def register():
     
     if not password_form:
         return render_template('lab8/register.html',
-                                error='Пароль не может быть пустым')
+                               error='Пароль не может быть пустым')
     
     login_exists = users.query.filter_by(login = login_form).first()
     if login_exists:
@@ -43,7 +43,6 @@ def register():
     db.session.commit()
 
     login_user(new_user)
-
     return redirect('/lab8/')
 
 @lab8.route('/lab8/login', methods = ['GET', 'POST'])
@@ -79,28 +78,31 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
-@lab8.route('/lab8/create', methods=['GET', 'POST'])  # ИЗМЕНИТЬ: убрать .html
-@login_required
-def create_article():  # ИЗМЕНИТЬ: переименовать функцию для ясности
+@lab8.route('/lab8/create', methods=['GET', 'POST'])
+@login_required  
+def create_article():
     if request.method == 'GET':
-        return render_template('lab8/create.html')  # ИЗМЕНИТЬ: добавить .html
+        return render_template('lab8/create_article.html')
+    
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
     is_favorite = bool(request.form.get('is_favorite'))
     is_public = bool(request.form.get('is_public'))
     
+   
     if not title:
-        return render_template('lab8/create.html', 
+        return render_template('lab8/create_article.html', 
                                error='Название статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
     
     if not article_text:
-        return render_template('lab8/create.html', 
+        return render_template('lab8/create_article.html', 
                                error='Текст статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
+    
     
     new_article = articles(
         title=title,
@@ -116,15 +118,17 @@ def create_article():  # ИЗМЕНИТЬ: переименовать функц
     return redirect('/lab8/articles')
 
 @lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
-@login_required
-def edit(article_id):
+@login_required  
+def edit_article(article_id):
+    
     article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
     
     if not article:
         return "Статья не найдена или у вас нет прав на её редактирование", 404
     
     if request.method == 'GET':
-        return render_template('lab8/edit.html', article=article)
+        return render_template('lab8/edit_article.html', article=article)
+    
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
@@ -132,12 +136,12 @@ def edit(article_id):
     is_public = bool(request.form.get('is_public'))
     
     if not title:
-        return render_template('lab8/edit.html', 
+        return render_template('lab8/edit_article.html', 
                                article=article,
                                error='Название статьи не может быть пустым')
     
     if not article_text:
-        return render_template('lab8/edit.html', 
+        return render_template('lab8/edit_article.html', 
                                article=article,
                                error='Текст статьи не может быть пустым')
     
@@ -151,7 +155,7 @@ def edit(article_id):
     return redirect('/lab8/articles')
 
 @lab8.route('/lab8/delete/<int:article_id>')
-@login_required
+@login_required  
 def delete_article(article_id):
     article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
     
@@ -167,6 +171,7 @@ def public_articles():
     
     base_query = articles.query.filter_by(is_public=True)
     
+   
     if query:
         articles_list = []
         all_public_articles = base_query.all()
@@ -184,11 +189,11 @@ def public_articles():
                           articles=articles_list, 
                           query=query)
 
-
 @lab8.route('/lab8/articles')
 @login_required
 def article_list():
     query = request.args.get('query', '').strip().lower()
+    
     
     base_query = articles.query.filter_by(login_id=current_user.id)
     
