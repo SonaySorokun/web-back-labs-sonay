@@ -79,11 +79,11 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
-@lab8.route('/lab8/create_article.html', methods=['GET', 'POST'])
+@lab8.route('/lab8/create.html', methods=['GET', 'POST'])
 @login_required
-def create_article():
+def create():
     if request.method == 'GET':
-        return render_template('lab8/create_article.html')
+        return render_template('lab8/create.html')
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
@@ -91,13 +91,13 @@ def create_article():
     is_public = bool(request.form.get('is_public'))
     
     if not title:
-        return render_template('lab8/create_article.html', 
+        return render_template('lab8/create.html', 
                                error='Название статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
     
     if not article_text:
-        return render_template('lab8/create_article.html', 
+        return render_template('lab8/create.html', 
                                error='Текст статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
@@ -117,14 +117,14 @@ def create_article():
 
 @lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
 @login_required
-def edit_article(article_id):
+def edit(article_id):
     article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
     
     if not article:
         return "Статья не найдена или у вас нет прав на её редактирование", 404
     
     if request.method == 'GET':
-        return render_template('lab8/edit_article.html', article=article)
+        return render_template('lab8/edit.html', article=article)
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
@@ -132,12 +132,12 @@ def edit_article(article_id):
     is_public = bool(request.form.get('is_public'))
     
     if not title:
-        return render_template('lab8/edit_article.html', 
+        return render_template('lab8/edit.html', 
                                article=article,
                                error='Название статьи не может быть пустым')
     
     if not article_text:
-        return render_template('lab8/edit_article.html', 
+        return render_template('lab8/edit.html', 
                                article=article,
                                error='Текст статьи не может быть пустым')
     
