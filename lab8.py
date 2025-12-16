@@ -13,7 +13,12 @@ lab8 = Blueprint('lab8', __name__)
 
 @lab8.route('/lab8/')
 def lab():
-    return render_template('lab8/lab8.html')
+    if 'login' in session:
+        user_login = session['login']
+        user = users.query.filter_by(login=user_login).first()
+        return render_template('lab8/lab8.html', login=user_login, user=user)
+    else:
+        return render_template('lab8/lab8.html')
 
 @lab8.route('/lab8/register', methods = ['GET', 'POST'])
 def register():
@@ -41,6 +46,9 @@ def register():
     new_user = users(login = login_form, password = password_hash)
     db.session.add(new_user)
     db.session.commit()
+
+    session['login'] = login_form
+
     return redirect('/lab8/')
 
 @lab8.route('/lab8/login', methods = ['GET', 'POST'])
@@ -50,6 +58,7 @@ def login():
     
     login_form = request.form.get('login', '').strip()
     password_form = request.form.get('password', '').strip()
+    remember_me = request.form.get('remember') == 'true'
 
     if not login_form:
         return render_template('lab8/login.html',
@@ -64,7 +73,12 @@ def login():
 
     if user:
         if check_password_hash(user.password, password_form):
-            login_user(user, remember= False)
+            session['login'] = login_form
+            if remember_me:
+                session.permanent = True
+            else:
+                session.permanent = False
+
             return redirect('/lab8/')
         
     return render_template('lab8/login.html',
