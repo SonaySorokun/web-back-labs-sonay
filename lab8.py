@@ -30,7 +30,7 @@ def register():
     
     if not password_form:
         return render_template('lab8/register.html',
-                               error='Пароль не может быть пустым')
+                                error='Пароль не может быть пустым')
     
     login_exists = users.query.filter_by(login = login_form).first()
     if login_exists:
@@ -43,6 +43,7 @@ def register():
     db.session.commit()
 
     login_user(new_user)
+
     return redirect('/lab8/')
 
 @lab8.route('/lab8/login', methods = ['GET', 'POST'])
@@ -79,30 +80,27 @@ def logout():
     return redirect('/lab8/')
 
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
-@login_required  
+@login_required
 def create_article():
     if request.method == 'GET':
-        return render_template('lab8/create_article.html')
-    
+        return render_template('lab8/create.html')
     
     title = request.form.get('title', '').strip()
     article_text = request.form.get('article_text', '').strip()
     is_favorite = bool(request.form.get('is_favorite'))
     is_public = bool(request.form.get('is_public'))
     
-   
     if not title:
-        return render_template('lab8/create_article.html', 
+        return render_template('lab8/create.html', 
                                error='Название статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
     
     if not article_text:
-        return render_template('lab8/create_article.html', 
+        return render_template('lab8/create.html', 
                                error='Текст статьи не может быть пустым',
                                title=title, article_text=article_text,
                                is_favorite=is_favorite, is_public=is_public)
-    
     
     new_article = articles(
         title=title,
@@ -155,7 +153,7 @@ def edit_article(article_id):
     return redirect('/lab8/articles')
 
 @lab8.route('/lab8/delete/<int:article_id>')
-@login_required  
+@login_required
 def delete_article(article_id):
     article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
     
@@ -171,7 +169,6 @@ def public_articles():
     
     base_query = articles.query.filter_by(is_public=True)
     
-   
     if query:
         articles_list = []
         all_public_articles = base_query.all()
