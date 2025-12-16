@@ -20,7 +20,6 @@
         <a href="/lab8/public" class="nav-button">Публичные статьи</a>
         
         {% if login %}
-        {% if current_user.is_authenticated %}
     <div>
         <span class="user-info">
             👤 <span class="username">{{ current_user.login }}</span>
