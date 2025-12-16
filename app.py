@@ -70,7 +70,7 @@ def title_page():
     lab6_url = url_for("lab6.lab")
     lab7_url = url_for("lab7.lab")
     lab8_url = url_for("lab8.lab")
-    lab8_url = url_for("lab9.lab")
+    lab9_url = url_for("lab9.lab")
 
 
     return '''
