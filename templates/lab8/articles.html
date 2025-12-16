@@ -5,18 +5,33 @@
 {% block main %}
     <h1>Мои статьи</h1>
 
+    <form action="/lab8/articles" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="query" placeholder="Поиск по моим статьям..." 
+               value="{{ query if query else '' }}" style="padding: 8px; width: 300px;">
+        <button type="submit" style="padding: 8px 15px;">Найти</button>
+        {% if query %}
+            <a href="/lab8/articles" style="margin-left: 10px;">Сбросить поиск</a>
+        {% endif %}
+    </form>
+
+    {% if query %}
+        <p style="margin-bottom: 15px;">
+            Результаты поиска по запросу: "<strong>{{ query }}</strong>"
+        </p>
+    {% endif %}
+
     {% if not articles %}
-        <p>У вас пока нет статей. <a href="/lab5/create">Создайте первую статью!</a></p>
+        <p>{% if query %}Ничего не найдено{% else %}У вас пока нет статей. <a href="/lab8/create">Создайте первую статью!</a>{% endif %}</p>
     {% else %}
         {% for article in articles %}
-             <div style="border: 1px solid #c2b5b5; padding: 15px; margin-bottom: 15px; border-radius: 5px; {% if article['is_favorite'] %}background-color: #fffacd;{% endif %}">
+                <div style="border: 1px solid #c2b5b5; padding: 15px; margin-bottom: 15px; border-radius: 5px; {% if article.is_favorite %}background-color: #fffacd;{% endif %}">
                 {% if article['is_favorite'] %}
                     <span style="color: rgb(209, 167, 115); font-weight: bold;">★ </span>
                 {% endif %}
-                <h2>{{ article['title'] }}</h2>
-                <blockquote>{{ article['article_text'] }}</blockquote>
+                <h2>{{ article.title }}</h2>  
+                <blockquote>{{ article.article_text }}</blockquote> 
                 <div>
-                    {% if article['is_public'] %}
+                    {% if article.is_public %}
                         <span style="color: rgb(142, 216, 142); margin-right: 10px;">Публичная</span>
                     {% else %}
                         <span style="color: rgb(143, 105, 105); margin-right: 10px;">Приватная</span>
@@ -31,9 +46,9 @@
     
     <div style="margin-top: 20px;">
         
-        <a href="/lab5/create">Создать новую статью</a> | 
-        <a href="/lab5/public">Публичные статьи</a> | 
-        <a href="/lab5/">На главную</a>
+        <a href="/lab8/create">Создать новую статью</a> | 
+        <a href="/lab/public">Публичные статьи</a> | 
+        <a href="/lab8/">На главную</a>
     </div>
 
     

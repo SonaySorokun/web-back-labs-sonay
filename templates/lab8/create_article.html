@@ -5,17 +5,19 @@
 {% block main %}
     <h1>Создание статей</h1>
 
+        {% if error %}
+    <div class="error">
     <form method="post">
         <div>
             <label>
                 Название статьи:
-                <input type="text" maxlength="50" name="title" required>
+                <input type="text" maxlength="50" name="title" >
             </label>
         </div>
 
         <div>
             Текст статьи:
-            <textarea name="article_text" rows="10" style="width: 100%;" required></textarea>
+                <textarea name="article_text" rows="10" style="width: 100%; padding: 5px;" >{{ article_text if article_text else '' }}</textarea>
         </div>
 
         <div>
@@ -34,7 +36,7 @@
 
         <div>
             <button type="submit">Создать статью</button>
-            <a href="/lab8/list" style="margin-left: 10px;">Отмена</a>
+            <a href="/lab8/" style="margin-left: 10px;">Отмена</a>
         </div>
 
 

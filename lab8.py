@@ -13,12 +13,7 @@ lab8 = Blueprint('lab8', __name__)
 
 @lab8.route('/lab8/')
 def lab():
-    if 'login' in session:
-        user_login = session['login']
-        user = users.query.filter_by(login=user_login).first()
-        return render_template('lab8/lab8.html', login=user_login, user=user)
-    else:
-        return render_template('lab8/lab8.html')
+   return render_template('lab8/lab8.html')
 
 @lab8.route('/lab8/register', methods = ['GET', 'POST'])
 def register():
@@ -47,7 +42,7 @@ def register():
     db.session.add(new_user)
     db.session.commit()
 
-    session['login'] = login_form
+    login_user(new_user)
 
     return redirect('/lab8/')
 
@@ -71,26 +66,147 @@ def login():
 
     user = users.query.filter_by(login = login_form).first()
 
-    if user:
-        if check_password_hash(user.password, password_form):
-            session['login'] = login_form
-            if remember_me:
-                session.permanent = True
-            else:
-                session.permanent = False
-
-            return redirect('/lab8/')
+    if user and check_password_hash(user.password, password_form):
+        login_user(user, remember=remember_me)
+        return redirect('/lab8/')
         
     return render_template('lab8/login.html',
                                error='Логин и/или пароль неверны')
-
-@lab8.route('/lab8/articles/')
-@login_required
-def article_list():
-    return "список статей"
 
 @lab8.route('/lab8/logout')
 @login_required
 def logout():
     logout_user()
     return redirect('/lab8/')
+
+@lab8.route('/lab8/create', methods=['GET', 'POST'])
+@login_required
+def create_article():
+    if request.method == 'GET':
+        return render_template('lab8/create_article.html')
+    
+    title = request.form.get('title', '').strip()
+    article_text = request.form.get('article_text', '').strip()
+    is_favorite = bool(request.form.get('is_favorite'))
+    is_public = bool(request.form.get('is_public'))
+    
+    if not title:
+        return render_template('lab8/create_article.html', 
+                               error='Название статьи не может быть пустым',
+                               title=title, article_text=article_text,
+                               is_favorite=is_favorite, is_public=is_public)
+    
+    if not article_text:
+        return render_template('lab8/create_article.html', 
+                               error='Текст статьи не может быть пустым',
+                               title=title, article_text=article_text,
+                               is_favorite=is_favorite, is_public=is_public)
+    
+    new_article = articles(
+        title=title,
+        article_text=article_text,
+        is_favorite=is_favorite,
+        is_public=is_public,
+        login_id=current_user.id
+    )
+    
+    db.session.add(new_article)
+    db.session.commit()
+    
+    return redirect('/lab8/articles')
+
+@lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
+@login_required
+def edit_article(article_id):
+    article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
+    
+    if not article:
+        return "Статья не найдена или у вас нет прав на её редактирование", 404
+    
+    if request.method == 'GET':
+        return render_template('lab8/edit_article.html', article=article)
+    
+    title = request.form.get('title', '').strip()
+    article_text = request.form.get('article_text', '').strip()
+    is_favorite = bool(request.form.get('is_favorite'))
+    is_public = bool(request.form.get('is_public'))
+    
+    if not title:
+        return render_template('lab8/edit_article.html', 
+                               article=article,
+                               error='Название статьи не может быть пустым')
+    
+    if not article_text:
+        return render_template('lab8/edit_article.html', 
+                               article=article,
+                               error='Текст статьи не может быть пустым')
+    
+    article.title = title
+    article.article_text = article_text
+    article.is_favorite = is_favorite
+    article.is_public = is_public
+    
+    db.session.commit()
+    
+    return redirect('/lab8/articles')
+
+@lab8.route('/lab8/delete/<int:article_id>')
+@login_required
+def delete_article(article_id):
+    article = articles.query.filter_by(id=article_id, login_id=current_user.id).first()
+    
+    if article:
+        db.session.delete(article)
+        db.session.commit()
+    
+    return redirect('/lab8/articles')
+
+@lab8.route('/lab8/public')
+def public_articles():
+    query = request.args.get('query', '').strip().lower()
+    
+    base_query = articles.query.filter_by(is_public=True)
+    
+    if query:
+        articles_list = []
+        all_public_articles = base_query.all()
+        
+        for article in all_public_articles:
+            title_lower = article.title.lower() if article.title else ""
+            text_lower = article.article_text.lower() if article.article_text else ""
+            
+            if query in title_lower or query in text_lower:
+                articles_list.append(article)
+    else:
+        articles_list = base_query.all()
+    
+    return render_template('lab8/public_articles.html', 
+                          articles=articles_list, 
+                          query=query)
+
+
+@lab8.route('/lab8/articles')
+@login_required
+def article_list():
+    query = request.args.get('query', '').strip().lower()
+    
+    base_query = articles.query.filter(
+        (articles.is_public == True) | (articles.login_id == current_user.id)
+    )
+    
+    if query:
+        articles_list = []
+        all_articles = base_query.all()
+        
+        for article in all_articles:
+            title_lower = article.title.lower() if article.title else ""
+            text_lower = article.article_text.lower() if article.article_text else ""
+            
+            if query in title_lower or query in text_lower:
+                articles_list.append(article)
+    else:
+        articles_list = base_query.all()
+    
+    return render_template('lab8/articles.html', 
+                          articles=articles_list, 
+                          query=query)

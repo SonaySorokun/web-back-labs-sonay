@@ -8,8 +8,8 @@
     <h1>База знаний</h1>
 
      <div style="margin-bottom: 20px;">
-        {% if login %}
-            <p>Добро пожаловать, <strong>{{ login }}</strong>!</p>
+         {% if current_user.is_authenticated %}
+            <p>Добро пожаловать, <strong>{{ current_user.login }}</strong>!</p>
         {% else %}
             <p>Добро пожаловать, <strong>Гость</strong>!</p>
         {% endif %}
@@ -17,15 +17,30 @@
 
     
      <nav class="nav-panel" style="margin-bottom: 20px;">
-        <a href="/lab5/public" class="nav-button">Публичные статьи</a>
+        <a href="/lab8/public" class="nav-button">Публичные статьи</a>
         
         {% if login %}
-            <a href="/lab8/list" class="nav-button">Мои статьи</a>
-            <a href="/lab8/create" class="nav-button">Создать статью</a>
-            <a href="/lab8/users" class="nav-button">Список пользователей</a>
-            <a href="/lab8/profile" class="nav-button">Профиль</a>
-            <a href="/lab8/logout" class="nav-button logout">Выйти</a>
-            <span class="user-info">Пользователь: {{ login }}</span>
+        {% if current_user.is_authenticated %}
+    <div>
+        <span class="user-info">
+            👤 <span class="username">{{ current_user.login }}</span>
+        </span>
+    </div>
+    
+    <div>
+        <a href="/lab8/articles" class="nav-button">
+            Мои статьи
+        </a>
+        <a href="/lab8/create" class="nav-button create-button">
+            Создать статью
+        </a>
+        <a href="/lab8/profile" class="nav-button">
+            Профиль
+        </a>
+        <a href="/lab8/logout" class="nav-button logout">
+            Выйти
+        </a>
+    </div>
         {% else %}
             <a href="/lab8/login" class="nav-button">Войти</a>
             <a href="/lab8/register" class="nav-button">Регистрация</a>
