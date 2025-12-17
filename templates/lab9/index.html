@@ -2,8 +2,105 @@
 
 {% block lab %}Лабораторная работа 9{% endblock %}
 
-{% block script %}{% endblock %}
-
 {% block main %}
-    <h1>Поздравления</h1>
+<h1>Новогодние подарки</h1>
+
+<div style="margin: 20px 0; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+    Открыто: <span id="opened">0</span> | 
+    Осталось: <span id="remaining">10</span> | 
+    Лимит: <strong>3</strong>
+</div>
+
+<div style="position: relative; height: 400px; border: 2px solid #ccc; margin: 20px 0; background: #e6f7ff;">
+</div>
+
+<div id="result" style="display: none; padding: 15px; background: #e8f5e9; border-radius: 5px; margin: 10px 0;">
+    <strong>Поздравление:</strong> <span id="congrat"></span>
+</div>
+
+<div>
+    <button onclick="loadBoxes()">Обновить</button>
+    <button onclick="resetGame()" style="background: #ff4444; color: white;">Сбросить</button>
+</div>
+
+<div style="margin-top: 20px; color: #666;">
+    <p>Нажмите на коробку, чтобы получить поздравление.</p>
+    <p>Можно открыть только 3 коробки.</p>
+</div>
+
+<script>
+let boxes = [];
+
+function loadBoxes() {
+    fetch('/lab9/get_boxes')
+        .then(r => r.json())
+        .then(data => {
+            boxes = data.boxes;
+            document.getElementById('opened').textContent = data.opened;
+            document.getElementById('remaining').textContent = data.remaining;
+            renderBoxes();
+        });
+}
+
+function renderBoxes() {
+    const container = document.querySelector('div[style*="height: 400px"]');
+    container.innerHTML = '';
+    
+    boxes.forEach(box => {
+        const div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.left = box.x + '%';
+        div.style.top = box.y + '%';
+        div.style.width = '50px';
+        div.style.height = '50px';
+        div.style.background = box.opened ? '#aaa' : '#ff4444';
+        div.style.border = '2px solid #333';
+        div.style.borderRadius = '5px';
+        div.style.cursor = box.opened ? 'default' : 'pointer';
+        div.style.textAlign = 'center';
+        div.style.lineHeight = '50px';
+        div.style.fontSize = '24px';
+        
+        if (box.opened) {
+            div.textContent = '✓';
+            div.style.color = '#666';
+        } else {
+            div.textContent = '🎁';
+        }
+        
+        if (!box.opened) {
+            div.onclick = () => openBox(box.id);
+        }
+        
+        container.appendChild(div);
+    });
+}
+
+function openBox(id) {
+    fetch('/lab9/open/' + id)
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                document.getElementById('congrat').textContent = data.text;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('opened').textContent = data.opened;
+                document.getElementById('remaining').textContent = data.remaining;
+                loadBoxes();
+            }
+        });
+}
+
+function resetGame() {
+    fetch('/lab9/reset')
+        .then(r => r.json())
+        .then(() => {
+            document.getElementById('result').style.display = 'none';
+            loadBoxes();
+        });
+}
+
+loadBoxes();
+</script>
 {% endblock %}
