@@ -3,6 +3,7 @@
 {% block lab %}Лабораторная работа 9{% endblock %}
 
 {% block main %}
+<!-- Подключаем ng.css -->
 <link rel="stylesheet" href="{{ url_for('static', filename='ng.css') }}">
 
 <h1>🎁 Новогодние Подарки</h1>
@@ -10,17 +11,26 @@
 <div style="text-align: center; margin: 20px 0;">
     {% if user_logged_in %}
         <div style="color: #FFD700; margin-bottom: 10px; font-size: 18px;">
-            👋 Вы вошли как: <strong>{{ user_name }}</strong>
+            Вы вошли как: <strong>{{ user_name }}</strong>
+            <div style="font-size: 14px; color: #32CD32; margin-top: 5px;">
+                Ваш личный лимит: {{ opened_count }}/3 открытых коробок
+            </div>
         </div>
         <div style="margin-bottom: 15px;">
             <button onclick="resetAll()" style="background: #f44336; padding: 12px 25px; font-size: 16px;">
-                🎅 Дед Мороз (наполнить все коробки)
+                🎅 Дед Мороз (сбросить мои коробки)
             </button>
         </div>
         <div style="color: #32CD32; font-size: 14px;">
-            🔓 Теперь вы можете открывать все подарки, включая особые!
+            Теперь вы можете открывать все подарки, включая особые!
         </div>
     {% else %}
+        <div style="color: #FFD700; margin-bottom: 15px; font-size: 16px;">
+            Вы: <strong>Гость</strong>
+            <div style="font-size: 14px; color: #FFD700; margin-top: 5px;">
+                Ваш личный лимит: {{ opened_count }}/3 открытых коробок
+            </div>
+        </div>
         <div style="color: #FFD700; margin-bottom: 15px; font-size: 16px;">
             🔒 Вы не авторизованы. Некоторые подарки недоступны.
         </div>
@@ -38,15 +48,15 @@
 <div style="display: flex; justify-content: center; gap: 40px; margin: 30px 0;">
     <div style="text-align: center; background: rgba(255,215,0,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #FFD700;">
         <div style="font-size: 36px; color: #FFD700; font-weight: bold;" id="count">{{ opened_count }}</div>
-        <div style="color: #32CD32;">Открыто</div>
+        <div style="color: #32CD32;">Ваши открытые</div>
     </div>
     <div style="text-align: center; background: rgba(50,205,50,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #32CD32;">
-        <div style="font-size: 36px; color: #FFD700; font-weight: bold;" id="left">{{ 10 - opened_count }}</div>
-        <div style="color: #32CD32;">Осталось</div>
+        <div style="font-size: 36px; color: #FFD700; font-weight: bold;">3</div>
+        <div style="color: #32CD32;">Ваш лимит</div>
     </div>
     <div style="text-align: center; background: rgba(178,34,34,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #b22222;">
-        <div style="font-size: 36px; color: #FFD700; font-weight: bold;">3</div>
-        <div style="color: #32CD32;">Лимит открытий</div>
+        <div style="font-size: 36px; color: #FFD700; font-weight: bold;">10</div>
+        <div style="color: #32CD32;">Всего коробок</div>
     </div>
 </div>
 
@@ -112,6 +122,7 @@
                 border-radius: 10px;
                 border: 2px solid #32CD32;
                 margin: 10px 0;">
+    <div id="congrat-text" style="color: #FFD700; font-size: 18px; font-style: italic; margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;"></div>
     <div style="margin-top: 20px;">
         <button onclick="closeResult()" style="padding: 10px 30px; font-size: 16px;">Закрыть</button>
     </div>
@@ -161,11 +172,17 @@ function openBox(id) {
                 }
             } else {
                 document.getElementById('congrat').src = '/static/lab9/' + data.congrat;
+                document.getElementById('congrat-text').textContent = data.text;
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
                 
-                document.getElementById('count').textContent = data.opened;
-                document.getElementById('left').textContent = 10 - data.opened;
+                document.getElementById('count').textContent = data.count;
+                
+                const userInfo = document.querySelector('.user-info');
+                if (userInfo) {
+                    userInfo.querySelector('.limit-info').textContent = 
+                        `Ваш личный лимит: ${data.count}/3 открытых коробок`;
+                }
                 
                 box.dataset.opened = 'True';
                 box.style.cursor = 'default';
@@ -181,14 +198,15 @@ function openBox(id) {
 }
 
 function resetAll() {
-    if (confirm('🎅 Дед Мороз наполнит все коробки заново для всех пользователей! Продолжить?')) {
+    if (confirm('🎅 Дед Мороз сбросит ВАШИ открытые коробки. Продолжить?')) {
         fetch('/lab9/reset')
             .then(r => r.json())
             .then(data => {
                 if (data.error) {
                     showMessage(data.error);
                 } else {
-                    showMessage('🎄 Все коробки наполнены заново!', 'success');
+                    showMessage('🎄 Ваши коробки сброшены! Обновляем страницу...', 'success');
+                    // Обновляем страницу через 1 секунду
                     setTimeout(() => {
                         location.reload();
                     }, 1000);
@@ -275,6 +293,16 @@ a {
 a:hover {
     background: rgba(255, 215, 0, 0.2);
     text-decoration: none;
+}
+
+.user-info {
+    margin-bottom: 15px;
+}
+
+.limit-info {
+    font-size: 14px;
+    color: #32CD32;
+    margin-top: 5px;
 }
 </style>
 {% endblock %}
