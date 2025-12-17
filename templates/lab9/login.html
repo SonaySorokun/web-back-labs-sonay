@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 9 - Вход{% endblock %}
+
+{% block main %}
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background: #f5f5f5; border-radius: 10px;">
+    <h2 style="text-align: center; margin-bottom: 30px;">Вход в систему</h2>
+    
+    <form id="login-form">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px;">Логин:</label>
+            <input type="text" name="login" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px;">Пароль:</label>
+            <input type="password" name="password" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+        </div>
+        
+        <div id="error" style="color: #f44336; margin-bottom: 15px; display: none;"></div>
+        
+        <button type="submit" style="width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Войти
+        </button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <p>Нет аккаунта? <a href="/lab9/register">Зарегистрируйтесь</a></p>
+        <p><a href="/lab9/">Назад к игре</a></p>
+    </div>
+</div>
+
+<script>
+document.getElementById('login-form').onsubmit = function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/lab9/login', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/lab9/';
+        } else {
+            document.getElementById('error').textContent = data.error || 'Ошибка входа';
+            document.getElementById('error').style.display = 'block';
+        }
+    })
+    .catch(err => {
+        document.getElementById('error').textContent = 'Ошибка соединения';
+        document.getElementById('error').style.display = 'block';
+    });
+};
+</script>
+{% endblock %}
