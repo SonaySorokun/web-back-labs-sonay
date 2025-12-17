@@ -36,7 +36,7 @@ positions = [
 def get_user_id():
     try:
         if current_user and current_user.is_authenticated:
-            return f"user_{current_user.id}"
+            return str(current_user.id)
     except:
         pass
     
