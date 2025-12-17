@@ -50,7 +50,7 @@ def open_box(box_id):
         return jsonify({'error': 'Уже открыта!'})
     
     if gifts[box_id-1].get('lock') and 'user' not in session:
-        return jsonify({'error': 'Нужен вход!', 'lock': True})
+        return jsonify({'error': 'Войдите для открытия!', 'lock': True})
     
     opened.append(box_id-1)
     session['opened'] = opened
@@ -61,23 +61,10 @@ def open_box(box_id):
         'opened': len(opened)
     })
 
-@lab9.route('/lab9/login', methods=['POST'])
-def login():
-    login = request.form.get('login')
-    if login:
-        session['user'] = login
-        return jsonify({'ok': True})
-    return jsonify({'error': 'Введите логин'})
-
-@lab9.route('/lab9/logout')
-def logout():
-    session.pop('user', None)
-    return jsonify({'ok': True})
-
 @lab9.route('/lab9/reset')
 def reset():
     if 'user' not in session:
-        return jsonify({'error': 'Нужен вход!'})
+        return jsonify({'error': 'Войдите!'})
     
     session['opened'] = []
     return jsonify({'ok': True})

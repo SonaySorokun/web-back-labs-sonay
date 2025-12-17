@@ -3,67 +3,63 @@
 {% block lab %}Лабораторная работа 9{% endblock %}
 
 {% block main %}
-<link rel="stylesheet" href="{{ url_for('static', filename='ng.css') }}">
-
-<h1>🎁 Новогодние Подарки 🎄</h1>
+<h1>🎁 Новогодние Подарки</h1>
 
 <div style="text-align: center; margin: 20px 0;">
     {% if session.user %}
-        <div style="font-size: 18px; color: #FFD700;">
-            👋 Привет, {{ session.user }}!
-            <button onclick="logout()" style="margin-left: 20px;">Выйти</button>
-            <button onclick="resetAll()" style="background: #f44336;">🎅 Дед Мороз</button>
+        <div style="color: #FFD700; margin-bottom: 10px;">
+            👋 Вы вошли как: <strong>{{ session.user }}</strong>
         </div>
+        <button onclick="logout()" style="margin-right: 10px;">Выйти</button>
+        <button onclick="resetAll()" style="background: #f44336;">🎅 Дед Мороз</button>
     {% else %}
-        <form id="login" style="display: inline;">
-            <input type="text" name="login" placeholder="Введите логин" required>
-            <button type="submit">Войти</button>
-        </form>
-        <div style="color: #FFD700; margin-top: 5px;">Любой логин подойдет</div>
+        <div style="display: inline-block; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
+            <a href="/lab8/login" style="color: #FFD700; text-decoration: none; margin: 0 10px;">Войти</a>
+            |
+            <a href="/lab8/register" style="color: #32CD32; text-decoration: none; margin: 0 10px;">Регистрация</a>
+        </div>
     {% endif %}
 </div>
 
-<div style="display: flex; justify-content: center; gap: 50px; margin: 30px 0;">
+<div style="display: flex; justify-content: center; gap: 40px; margin: 30px 0;">
     <div style="text-align: center;">
-        <div style="font-size: 36px; color: #FFD700;">{{ opened_count }}</div>
+        <div style="font-size: 30px; color: #FFD700;">{{ opened_count }}</div>
         <div style="color: #32CD32;">Открыто</div>
     </div>
     <div style="text-align: center;">
-        <div style="font-size: 36px; color: #FFD700;">{{ 10 - opened_count }}</div>
+        <div style="font-size: 30px; color: #FFD700;">{{ 10 - opened_count }}</div>
         <div style="color: #32CD32;">Осталось</div>
     </div>
     <div style="text-align: center;">
-        <div style="font-size: 36px; color: #FFD700;">3</div>
-        <div style="color: #32CD32;">Лимит</div>
+        <div style="font-size: 30px; color: #FFD700;">3</div>
+        <div style="color: #32CD32;">Можно открыть</div>
     </div>
 </div>
 
-<div style="position: relative; height: 400px; margin: 40px 0;">
+<div style="position: relative; height: 400px; margin: 30px 0; background: rgba(0,0,0,0.2); border-radius: 10px;">
     {% for box in boxes %}
-    <div onclick="openBox({{ box.id }})" 
+    <div class="gift-box" 
+         data-id="{{ box.id }}"
+         data-opened="{{ box.opened }}"
          style="position: absolute; 
                 left: {{ box.x }}%; 
                 top: {{ box.y }}%; 
-                width: 80px; 
-                height: 80px; 
-                cursor: pointer;"
-         class="gift-box">
+                width: 70px; 
+                height: 70px; 
+                cursor: {{ 'default' if box.opened else 'pointer' }};
+                text-align: center;">
         
         <img src="/static/lab9/{{ box.id }}.png" 
              alt="Подарок {{ box.id }}"
              style="width: 100%; 
-                    height: 100%; 
-                    border: {{ '3px solid #888' if box.opened else '3px solid #FFD700' }};
-                    border-radius: 10px;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                    {% if box.opened %}filter: grayscale(100%) brightness(0.6);{% endif %}">
+                    height: 100%;
+                    border-radius: 8px;
+                    border: {{ '2px solid #666' if box.opened else '2px solid #FFD700' }};
+                    {% if box.opened %}opacity: 0.4;{% endif %}">
         
-        <div style="position: absolute; 
-                    top: -25px; 
-                    left: 0; 
-                    width: 100%; 
-                    text-align: center;
-                    color: {{ '#FFD700' if box.lock and not box.opened else 'white' }};
+        <div style="margin-top: 5px; 
+                    font-size: 12px; 
+                    color: {{ '#FFD700' if box.lock and not box.opened else '#32CD32' }};
                     font-weight: bold;">
             {{ box.id }}{% if box.lock and not box.opened %} 🔒{% endif %}
         </div>
@@ -76,16 +72,16 @@
                         top: 50%; 
                         left: 50%; 
                         transform: translate(-50%, -50%); 
-                        background: rgba(12, 44, 28, 0.95); 
-                        padding: 30px; 
-                        border-radius: 15px; 
-                        border: 3px solid #FFD700;
+                        background: #0c2c1c; 
+                        padding: 20px; 
+                        border-radius: 10px; 
+                        border: 2px solid #FFD700;
                         z-index: 1000;
                         text-align: center;">
-    <h2 style="color: #FFD700; margin-top: 0;">🎉 Ваше поздравление!</h2>
-    <img id="congrat" src="" style="max-width: 400px; max-height: 300px; border-radius: 10px;">
-    <div style="margin-top: 20px;">
-        <button onclick="closeResult()" style="padding: 10px 30px;">Закрыть</button>
+    <div style="color: #FFD700; font-size: 20px; margin-bottom: 15px;">🎉 Поздравление!</div>
+    <img id="congrat" src="" style="max-width: 300px; max-height: 200px; border-radius: 5px;">
+    <div style="margin-top: 15px;">
+        <button onclick="closeResult()">ОК</button>
     </div>
 </div>
 
@@ -94,49 +90,45 @@
                      top: 20px; 
                      left: 50%; 
                      transform: translateX(-50%); 
-                     padding: 15px 30px; 
-                     border-radius: 10px; 
+                     padding: 10px 20px; 
+                     border-radius: 5px; 
+                     background: #f44336; 
                      color: white;
                      font-weight: bold;
                      z-index: 1001;"></div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.gift-box').forEach(box => {
+        box.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const opened = this.dataset.opened === 'True';
+            
+            if (!opened) {
+                openBox(id);
+            }
+        });
+    });
+});
+
 function openBox(id) {
     fetch('/lab9/open/' + id)
         .then(r => r.json())
         .then(data => {
             if (data.error) {
                 if (data.lock) {
-                    showMessage('🔒 Нужно войти!', '#FF9800');
+                    showMessage('Войдите для открытия этой коробки');
                 } else {
-                    showMessage(data.error, '#f44336');
+                    showMessage(data.error);
                 }
             } else {
                 document.getElementById('congrat').src = '/static/lab9/' + data.congrat;
                 document.getElementById('result').style.display = 'block';
                 
-                setTimeout(() => location.reload(), 500);
+                setTimeout(() => location.reload(), 1000);
             }
         });
 }
-
-document.getElementById('login')?.onsubmit = function(e) {
-    e.preventDefault();
-    const form = new FormData(this);
-    
-    fetch('/lab9/login', {
-        method: 'POST',
-        body: form
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.ok) {
-            location.reload();
-        } else {
-            showMessage(data.error, '#f44336');
-        }
-    });
-};
 
 function logout() {
     fetch('/lab9/logout')
@@ -145,14 +137,14 @@ function logout() {
 }
 
 function resetAll() {
-    if (confirm('🎅 Дед Мороз наполнит все коробки?')) {
+    if (confirm('Дед Мороз наполнит все коробки заново. Продолжить?')) {
         fetch('/lab9/reset')
             .then(r => r.json())
             .then(data => {
                 if (data.ok) {
                     location.reload();
                 } else {
-                    showMessage(data.error, '#f44336');
+                    showMessage(data.error);
                 }
             });
     }
@@ -162,29 +154,44 @@ function closeResult() {
     document.getElementById('result').style.display = 'none';
 }
 
-function showMessage(text, color) {
+function showMessage(text) {
     const div = document.getElementById('msg');
     div.textContent = text;
-    div.style.background = color;
     div.style.display = 'block';
     
     setTimeout(() => div.style.display = 'none', 3000);
 }
-
-document.querySelectorAll('.gift-box').forEach(box => {
-    box.onmouseover = function() {
-        const img = this.querySelector('img');
-        if (!img.style.filter.includes('grayscale')) {
-            img.style.transform = 'scale(1.1)';
-            img.style.boxShadow = '0 8px 25px rgba(255, 215, 0, 0.5)';
-        }
-    };
-    
-    box.onmouseout = function() {
-        const img = this.querySelector('img');
-        img.style.transform = 'scale(1)';
-        img.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
-    };
-});
 </script>
+
+<style>
+.gift-box:hover:not([data-opened="True"]) img {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px #FFD700;
+    transition: all 0.2s;
+}
+
+button {
+    background: linear-gradient(to bottom, #b22222, #8b0000);
+    color: #FFD700;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #228B22, #0c2c1c);
+}
+
+a {
+    color: #FFD700;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+</style>
 {% endblock %}
