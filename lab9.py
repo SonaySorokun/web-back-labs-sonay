@@ -1,216 +1,83 @@
-from flask import Blueprint, render_template, session, jsonify, request, url_for
-import random
+from flask import Blueprint, render_template, session, jsonify, request
 
 lab9 = Blueprint('lab9', __name__)
 
-GIFTS = [
-    {
-        "id": 1,
-        "gift_image": "1.png",
-        "congrat_image": "1.1.png",
-        "title": "Золотая ёлочка"
-    },
-    {
-        "id": 2,
-        "gift_image": "2.png",
-        "congrat_image": "1.2.png",
-        "title": "Волшебный снеговик"
-    },
-    {
-        "id": 3,
-        "gift_image": "3.png",
-        "congrat_image": "1.3.png",
-        "title": "Кристалл удачи"
-    },
-    {
-        "id": 4,
-        "gift_image": "4.png",
-        "congrat_image": "1.4.png",
-        "title": "Мандарин счастья"
-    },
-    {
-        "id": 5,
-        "gift_image": "5.png",
-        "congrat_image": "1.5.png",
-        "title": "Сердечко тепла"
-    },
-    {
-        "id": 6,
-        "gift_image": "6.png",
-        "congrat_image": "1.6.png",
-        "title": "Солнечный зайчик"
-    },
-    {
-        "id": 7,
-        "gift_image": "7.png",
-        "congrat_image": "1.7.png",
-        "title": "Кубок победителя",
-        "requires_auth": True
-    },
-    {
-        "id": 8,
-        "gift_image": "8.png",
-        "congrat_image": "1.8.png",
-        "title": "Четырехлистный клевер",
-        "requires_auth": True
-    },
-    {
-        "id": 9,
-        "gift_image": "9.png",
-        "congrat_image": "1.9.png",
-        "title": "Домик мечты"
-    },
-    {
-        "id": 10,
-        "gift_image": "10.png",
-        "congrat_image": "1.10.png",
-        "title": "Волшебная звезда"
-    }
+gifts = [
+    {"id": 1, "image": "1.png", "congrat": "1.1.png"},
+    {"id": 2, "image": "2.png", "congrat": "1.2.png"},
+    {"id": 3, "image": "3.png", "congrat": "1.3.png"},
+    {"id": 4, "image": "4.png", "congrat": "1.4.png"},
+    {"id": 5, "image": "5.png", "congrat": "1.5.png"},
+    {"id": 6, "image": "6.png", "congrat": "1.6.png"},
+    {"id": 7, "image": "7.png", "congrat": "1.7.png", "lock": True},
+    {"id": 8, "image": "8.png", "congrat": "1.8.png", "lock": True},
+    {"id": 9, "image": "9.png", "congrat": "1.9.png"},
+    {"id": 10, "image": "10.png", "congrat": "1.10.png"}
 ]
 
-BOX_POSITIONS = [
-    (15, 20), (35, 15), (55, 25), (75, 20), (20, 50),
-    (40, 55), (60, 60), (80, 50), (30, 80), (65, 85)
+positions = [
+    (10, 10), (30, 10), (50, 10), (70, 10), (90, 10),
+    (10, 40), (30, 40), (50, 40), (70, 40), (90, 40)
 ]
-
-def init_session():
-    if 'opened_boxes' not in session:
-        session['opened_boxes'] = []
-    if 'user' not in session:
-        session['user'] = None
 
 @lab9.route('/lab9/')
 def lab():
-    init_session()
+    if 'opened' not in session:
+        session['opened'] = []
     
     boxes = []
     for i in range(10):
         boxes.append({
-            'id': i + 1,
-            'opened': i in session.get('opened_boxes', []),
-            'position': BOX_POSITIONS[i],
-            'requires_auth': GIFTS[i].get('requires_auth', False),
-            'gift_image': GIFTS[i]['gift_image'],
-            'title': GIFTS[i]['title']
+            'id': i+1,
+            'opened': i in session['opened'],
+            'x': positions[i][0],
+            'y': positions[i][1],
+            'lock': gifts[i].get('lock', False)
         })
-    
-    opened_count = len(session.get('opened_boxes', []))
     
     return render_template('lab9/index.html', 
                          boxes=boxes,
-                         opened_count=opened_count,
-                         user=session.get('user'),
-                         static_url=url_for('static', filename=''))
+                         opened_count=len(session['opened']))
 
-@lab9.route('/lab9/login', methods=['GET', 'POST'])
+@lab9.route('/lab9/open/<int:box_id>')
+def open_box(box_id):
+    opened = session.get('opened', [])
+    
+    if len(opened) >= 3:
+        return jsonify({'error': 'Лимит 3 коробки!'})
+    
+    if (box_id-1) in opened:
+        return jsonify({'error': 'Уже открыта!'})
+    
+    if gifts[box_id-1].get('lock') and 'user' not in session:
+        return jsonify({'error': 'Нужен вход!', 'lock': True})
+    
+    opened.append(box_id-1)
+    session['opened'] = opened
+    
+    return jsonify({
+        'ok': True,
+        'congrat': gifts[box_id-1]['congrat'],
+        'opened': len(opened)
+    })
+
+@lab9.route('/lab9/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        login_input = request.form.get('login')
-        password = request.form.get('password')
-        
-        if login_input and password:
-            session['user'] = {
-                'login': login_input,
-                'name': login_input.capitalize()
-            }
-            session.modified = True
-            return jsonify({'success': True})
-        
-        return jsonify({'error': 'Заполните все поля'}), 400
-    
-    return render_template('lab9/login.html')
-
-@lab9.route('/lab9/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        login_input = request.form.get('login')
-        password = request.form.get('password')
-        
-        if login_input and password:
-            session['user'] = {
-                'login': login_input,
-                'name': login_input.capitalize()
-            }
-            session.modified = True
-            return jsonify({'success': True})
-        
-        return jsonify({'error': 'Заполните все поля'}), 400
-    
-    return render_template('lab9/register.html')
+    login = request.form.get('login')
+    if login:
+        session['user'] = login
+        return jsonify({'ok': True})
+    return jsonify({'error': 'Введите логин'})
 
 @lab9.route('/lab9/logout')
 def logout():
     session.pop('user', None)
-    session.modified = True
-    return jsonify({'success': True})
+    return jsonify({'ok': True})
 
-@lab9.route('/lab9/api/boxes')
-def get_boxes_api():
-    init_session()
+@lab9.route('/lab9/reset')
+def reset():
+    if 'user' not in session:
+        return jsonify({'error': 'Нужен вход!'})
     
-    boxes_data = []
-    for i in range(10):
-        box = {
-            'id': i + 1,
-            'opened': i in session['opened_boxes'],
-            'x': BOX_POSITIONS[i][0],
-            'y': BOX_POSITIONS[i][1],
-            'requires_auth': GIFTS[i].get('requires_auth', False),
-            'gift_image': GIFTS[i]['gift_image'],
-            'title': GIFTS[i]['title']
-        }
-        boxes_data.append(box)
-    
-    return jsonify({
-        'boxes': boxes_data,
-        'opened_count': len(session['opened_boxes']),
-        'user': session.get('user'),
-        'static_url': url_for('static', filename='')
-    })
-
-@lab9.route('/lab9/api/open/<int:box_id>', methods=['POST'])
-def open_box_api(box_id):
-    init_session()
-    
-    if box_id < 1 or box_id > 10:
-        return jsonify({'error': 'Нет такой коробки'}), 400
-    
-    opened_count = len(session.get('opened_boxes', []))
-    if opened_count >= 3:
-        return jsonify({'error': 'Можно открыть только 3 коробки'}), 400
-    
-    if (box_id - 1) in session.get('opened_boxes', []):
-        return jsonify({'error': 'Коробка уже открыта'}), 400
-    
-    gift_data = GIFTS[box_id - 1]
-    if gift_data.get('requires_auth') and not session.get('user'):
-        return jsonify({
-            'error': 'Для открытия этой коробки нужно войти в систему',
-            'requires_auth': True
-        }), 403
-    
-    if 'opened_boxes' not in session:
-        session['opened_boxes'] = []
-    session['opened_boxes'].append(box_id - 1)
-    session.modified = True
-    
-    return jsonify({
-        'success': True,
-        'congrat_image': gift_data['congrat_image'],
-        'title': gift_data['title'],
-        'opened_count': len(session['opened_boxes']),
-        'static_url': url_for('static', filename='')
-    })
-
-@lab9.route('/lab9/api/reset', methods=['POST'])
-def reset_boxes():
-    if not session.get('user'):
-        return jsonify({'error': 'Только авторизованные пользователи могут вызывать Деда Мороза'}), 401
-    
-    session['opened_boxes'] = []
-    session.modified = True
-    
-    return jsonify({
-        'success': True,
-        'message': f'🎅 Дед Мороз {session["user"]["name"]} наполнил все коробки заново!'
-    })
+    session['opened'] = []
+    return jsonify({'ok': True})
