@@ -34,17 +34,19 @@ positions = [
 ]
 
 def get_user_id():
+    # Для авторизованных пользователей
     try:
         if current_user and current_user.is_authenticated:
-            if 'user_id' not in session:
-                session['user_id'] = f"user_{current_user.id}"
-            return session['user_id']
+            if 'lab9_user_id' not in session:
+                session['lab9_user_id'] = f"user_{current_user.id}"
+            return session['lab9_user_id']
     except:
         pass
     
-    if 'user_id' not in session:
-        session['user_id'] = f"guest_{os.urandom(8).hex()}"
-    return session['user_id']
+    # Для гостей
+    if 'lab9_user_id' not in session:
+        session['lab9_user_id'] = f"guest_{os.urandom(8).hex()}"
+    return session['lab9_user_id']
 
 @lab9.route('/lab9/')
 def lab():
