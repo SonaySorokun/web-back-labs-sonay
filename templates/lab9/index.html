@@ -8,37 +8,53 @@
 <h1>🎁 Новогодние Подарки</h1>
 
 <div style="text-align: center; margin: 20px 0;">
-    {% if session.user %}
-        <div style="color: #FFD700; margin-bottom: 10px;">
-            👋 Вы вошли как: <strong>{{ session.user }}</strong>
+    {% if user_logged_in %}
+        <div style="color: #FFD700; margin-bottom: 10px; font-size: 18px;">
+            👋 Вы вошли как: <strong>{{ user_name }}</strong>
         </div>
-        <button onclick="logout()" style="margin-right: 10px;">Выйти</button>
-        <button onclick="resetAll()" style="background: #f44336;">🎅 Дед Мороз</button>
+        <div style="margin-bottom: 15px;">
+            <button onclick="resetAll()" style="background: #f44336; padding: 12px 25px; font-size: 16px;">
+                🎅 Дед Мороз (наполнить все коробки)
+            </button>
+        </div>
+        <div style="color: #32CD32; font-size: 14px;">
+            🔓 Теперь вы можете открывать все подарки, включая особые!
+        </div>
     {% else %}
+        <div style="color: #FFD700; margin-bottom: 15px; font-size: 16px;">
+            🔒 Вы не авторизованы. Некоторые подарки недоступны.
+        </div>
         <div style="display: inline-block; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
-            <a href="/lab8/login" style="color: #FFD700; text-decoration: none; margin: 0 10px;">Войти</a>
+            <a href="/lab8/login" style="color: #FFD700; text-decoration: none; margin: 0 10px; font-weight: bold;">Войти</a>
             |
-            <a href="/lab8/register" style="color: #32CD32; text-decoration: none; margin: 0 10px;">Регистрация</a>
+            <a href="/lab8/register" style="color: #32CD32; text-decoration: none; margin: 0 10px; font-weight: bold;">Регистрация</a>
+        </div>
+        <div style="color: #FFD700; margin-top: 10px; font-size: 14px;">
+            ⭐ После входа откроются особые подарки и функция "Дед Мороз"
         </div>
     {% endif %}
 </div>
 
 <div style="display: flex; justify-content: center; gap: 40px; margin: 30px 0;">
-    <div style="text-align: center;">
-        <div style="font-size: 30px; color: #FFD700;">{{ opened_count }}</div>
+    <div style="text-align: center; background: rgba(255,215,0,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #FFD700;">
+        <div style="font-size: 36px; color: #FFD700; font-weight: bold;" id="count">{{ opened_count }}</div>
         <div style="color: #32CD32;">Открыто</div>
     </div>
-    <div style="text-align: center;">
-        <div style="font-size: 30px; color: #FFD700;">{{ 10 - opened_count }}</div>
+    <div style="text-align: center; background: rgba(50,205,50,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #32CD32;">
+        <div style="font-size: 36px; color: #FFD700; font-weight: bold;" id="left">{{ 10 - opened_count }}</div>
         <div style="color: #32CD32;">Осталось</div>
     </div>
-    <div style="text-align: center;">
-        <div style="font-size: 30px; color: #FFD700;">3</div>
-        <div style="color: #32CD32;">Можно открыть</div>
+    <div style="text-align: center; background: rgba(178,34,34,0.1); padding: 15px 25px; border-radius: 10px; border: 1px solid #b22222;">
+        <div style="font-size: 36px; color: #FFD700; font-weight: bold;">3</div>
+        <div style="color: #32CD32;">Лимит открытий</div>
     </div>
 </div>
 
-<div style="position: relative; height: 400px; margin: 30px 0; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 20px;">
+<div style="text-align: center; margin: 20px 0; color: #FFD700; font-size: 14px;">
+    Подарки с 🔒 доступны только авторизованным пользователям
+</div>
+
+<div style="position: relative; height: 400px; margin: 30px 0; background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; border: 2px solid #FFD700;">
     {% for box in boxes %}
     <div class="gift-box" 
          data-id="{{ box.id }}"
@@ -47,8 +63,8 @@
          style="position: absolute; 
                 left: {{ box.x }}%; 
                 top: {{ box.y }}%; 
-                width: 80px; 
-                height: 80px; 
+                width: 85px; 
+                height: 85px; 
                 cursor: {{ 'default' if box.opened else 'pointer' }};
                 text-align: center;">
         
@@ -64,7 +80,10 @@
                     font-size: 14px; 
                     color: {{ '#FFD700' if box.lock and not box.opened else '#32CD32' }};
                     font-weight: bold;
-                    text-shadow: 1px 1px 2px black;">
+                    text-shadow: 1px 1px 2px black;
+                    background: rgba(0,0,0,0.7);
+                    padding: 2px 5px;
+                    border-radius: 3px;">
             {{ box.id }}{% if box.lock and not box.opened %} 🔒{% endif %}
         </div>
     </div>
@@ -85,7 +104,7 @@
                         text-align: center;
                         min-width: 400px;">
     <div style="color: #FFD700; font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        🎉 Ваш подарок! 🎉
+        🎉 Ваш новогодний подарок! 🎉
     </div>
     <img id="congrat" src="" 
          style="max-width: 350px; 
@@ -104,7 +123,7 @@
                          left: 0; 
                          width: 100%; 
                          height: 100%; 
-                         background: rgba(0,0,0,0.7); 
+                         background: rgba(0,0,0,0.8); 
                          z-index: 999;"></div>
 
 <div id="msg" style="display: none; 
@@ -136,7 +155,7 @@ function openBox(id) {
         .then(data => {
             if (data.error) {
                 if (data.lock) {
-                    showMessage('🔒 Для открытия этой коробки нужно войти в систему');
+                    showMessage('🔒 Для открытия этой коробки нужно войти в систему!');
                 } else {
                     showMessage(data.error);
                 }
@@ -145,8 +164,8 @@ function openBox(id) {
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
                 
-                document.querySelectorAll('.stat-num')[0].textContent = data.opened;
-                document.querySelectorAll('.stat-num')[1].textContent = 10 - data.opened;
+                document.getElementById('count').textContent = data.opened;
+                document.getElementById('left').textContent = 10 - data.opened;
                 
                 box.dataset.opened = 'True';
                 box.style.cursor = 'default';
@@ -161,22 +180,22 @@ function openBox(id) {
         });
 }
 
-function logout() {
-    fetch('/lab9/logout')
-        .then(r => r.json())
-        .then(() => location.reload());
-}
-
 function resetAll() {
-    if (confirm('🎅 Дед Мороз наполнит все коробки заново. Продолжить?')) {
+    if (confirm('🎅 Дед Мороз наполнит все коробки заново для всех пользователей! Продолжить?')) {
         fetch('/lab9/reset')
             .then(r => r.json())
             .then(data => {
-                if (data.ok) {
-                    location.reload();
-                } else {
+                if (data.error) {
                     showMessage(data.error);
+                } else {
+                    showMessage('🎄 Все коробки наполнены заново!', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 }
+            })
+            .catch(err => {
+                showMessage('Ошибка при сбросе коробок');
             });
     }
 }
@@ -186,10 +205,15 @@ function closeResult() {
     document.getElementById('overlay').style.display = 'none';
 }
 
-function showMessage(text) {
+function showMessage(text, type = 'error') {
     const div = document.getElementById('msg');
     div.textContent = text;
     div.style.display = 'block';
+    
+    if (type === 'success') {
+        div.style.background = '#228B22';
+        div.style.color = '#FFD700';
+    }
     
     setTimeout(() => {
         div.style.display = 'none';
@@ -201,8 +225,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (box.dataset.opened !== 'True') {
             box.addEventListener('mouseenter', function() {
                 const img = this.querySelector('img');
-                img.style.transform = 'scale(1.1)';
-                img.style.boxShadow = '0 0 15px #FFD700';
+                img.style.transform = 'scale(1.15)';
+                img.style.boxShadow = '0 0 20px #FFD700';
                 img.style.transition = 'all 0.3s';
             });
             
@@ -224,18 +248,19 @@ document.addEventListener('DOMContentLoaded', function() {
 button {
     background: linear-gradient(to bottom, #b22222, #8b0000);
     color: #FFD700;
-    padding: 10px 20px;
+    padding: 10px 25px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 15px;
     margin: 5px;
 }
 
 button:hover {
     background: linear-gradient(to bottom, #228B22, #0c2c1c);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
 }
 
 a {
@@ -244,17 +269,12 @@ a {
     padding: 8px 15px;
     border-radius: 4px;
     transition: all 0.3s;
+    font-size: 15px;
 }
 
 a:hover {
-    background: rgba(255, 215, 0, 0.1);
+    background: rgba(255, 215, 0, 0.2);
     text-decoration: none;
-}
-
-.stat-num {
-    font-size: 32px;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 </style>
 {% endblock %}

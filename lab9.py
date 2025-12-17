@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, session, jsonify, request
+from flask_login import current_user
 
 lab9 = Blueprint('lab9', __name__)
 
@@ -22,26 +23,40 @@ positions = [
 
 @lab9.route('/lab9/')
 def lab():
-    if 'opened' not in session:
-        session['opened'] = []
+    if 'lab9_opened' not in session:
+        session['lab9_opened'] = []
     
     boxes = []
     for i in range(10):
         boxes.append({
             'id': i+1,
-            'opened': i in session['opened'],
+            'opened': i in session['lab9_opened'],
             'x': positions[i][0],
             'y': positions[i][1],
             'lock': gifts[i].get('lock', False)
         })
     
+    user_logged_in = False
+    user_name = None
+    
+    try:
+        if current_user and current_user.is_authenticated:
+            user_logged_in = True
+            user_name = getattr(current_user, 'login', 'Пользователь')
+    except:
+        if 'user' in session:
+            user_logged_in = True
+            user_name = session.get('user')
+    
     return render_template('lab9/index.html', 
                          boxes=boxes,
-                         opened_count=len(session['opened']))
+                         opened_count=len(session['lab9_opened']),
+                         user_logged_in=user_logged_in,
+                         user_name=user_name)
 
 @lab9.route('/lab9/open/<int:box_id>')
 def open_box(box_id):
-    opened = session.get('opened', [])
+    opened = session.get('lab9_opened', [])
     
     if len(opened) >= 3:
         return jsonify({'error': 'Лимит 3 коробки!'})
@@ -49,11 +64,22 @@ def open_box(box_id):
     if (box_id-1) in opened:
         return jsonify({'error': 'Уже открыта!'})
     
-    if gifts[box_id-1].get('lock') and 'user' not in session:
-        return jsonify({'error': 'Войдите для открытия!', 'lock': True})
+    if gifts[box_id-1].get('lock'):
+        user_authenticated = False
+        try:
+            if current_user and current_user.is_authenticated:
+                user_authenticated = True
+        except:
+            if 'user' not in session:
+                user_authenticated = False
+            else:
+                user_authenticated = True
+        
+        if not user_authenticated:
+            return jsonify({'error': 'Войдите для открытия!', 'lock': True})
     
     opened.append(box_id-1)
-    session['opened'] = opened
+    session['lab9_opened'] = opened
     
     return jsonify({
         'ok': True,
@@ -63,8 +89,18 @@ def open_box(box_id):
 
 @lab9.route('/lab9/reset')
 def reset():
-    if 'user' not in session:
-        return jsonify({'error': 'Войдите!'})
+    user_authenticated = False
+    try:
+        if current_user and current_user.is_authenticated:
+            user_authenticated = True
+    except:
+        if 'user' not in session:
+            user_authenticated = False
+        else:
+            user_authenticated = True
     
-    session['opened'] = []
+    if not user_authenticated:
+        return jsonify({'error': 'Войдите для использования!'})
+    
+    session['lab9_opened'] = []
     return jsonify({'ok': True})
